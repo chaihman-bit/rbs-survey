@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>RBS Store Survey</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0f1f3d; --navy2:#1a2f52;
+  --blue:#2563eb; --blue-l:#eff6ff; --blue-b:#bfdbfe;
+  --green:#16a34a; --green-l:#f0fdf4; --green-b:#86efac;
+  --amber:#d97706; --amber-l:#fffbeb; --amber-b:#fcd34d;
+  --red:#dc2626; --red-l:#fef2f2; --red-b:#fca5a5;
+  --gray-50:#f8fafc; --gray-100:#f1f5f9; --gray-200:#e2e8f0;
+  --gray-300:#cbd5e1; --gray-400:#94a3b8; --gray-500:#64748b;
+  --gray-600:#475569; --gray-700:#334155; --gray-900:#0f172a;
+  --r:12px; --r-sm:8px; --r-xs:6px;
+  --font:'Outfit',sans-serif; --mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--gray-50);color:var(--gray-900);min-height:100vh;padding-bottom:72px}
+
+/* ── HEADER ── */
+.hdr{background:var(--navy);position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.3)}
+.hdr-inner{padding:14px 16px 0}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:34px;height:34px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:500;color:#fff;letter-spacing:-.5px;flex-shrink:0}
+.brand-name{font-size:14px;font-weight:600;color:#fff;line-height:1.1}
+.brand-sub{font-size:10px;color:var(--gray-400);font-weight:400}
+.lang-wrap{display:flex;background:rgba(255,255,255,.08);border-radius:20px;padding:2px;gap:1px}
+.lang-btn{padding:4px 10px;border-radius:16px;font-size:11px;font-weight:600;color:rgba(255,255,255,.5);border:none;background:transparent;cursor:pointer;font-family:var(--font);transition:all .2s}
+.lang-btn.on{background:var(--blue);color:#fff}
+.prog-wrap{padding-bottom:10px}
+.prog-track{height:2.5px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden;margin-bottom:4px}
+.prog-fill{height:100%;background:#60a5fa;border-radius:2px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.prog-meta{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.4)}
+
+/* ── STEP PILLS ── */
+.steps{display:flex;gap:4px;padding:8px 12px;background:#fff;border-bottom:1px solid var(--gray-100);overflow-x:auto;scrollbar-width:none}
+.steps::-webkit-scrollbar{display:none}
+.sp{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;border:1.5px solid var(--gray-200);color:var(--gray-400);background:#fff;cursor:pointer;transition:all .18s;white-space:nowrap;font-family:var(--font)}
+.sp.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.sp.done{background:var(--green-l);color:var(--green);border-color:var(--green-b)}
+
+/* ── LAYOUT ── */
+.content{max-width:600px;margin:0 auto;padding:14px 12px}
+.page{display:none}.page.on{display:block}
+
+/* ── SECTION HEADER ── */
+.sec-hdr{border-radius:var(--r) var(--r) 0 0;padding:13px 16px;color:#fff}
+.sec-hdr h2{font-size:13px;font-weight:600;margin-bottom:2px}
+.sec-hdr p{font-size:10px;opacity:.65}
+.wt-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.18);color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;margin-top:5px}
+
+/* ── CARD ── */
+.card{background:#fff;border:1px solid var(--gray-200);border-radius:0 0 var(--r) var(--r);margin-bottom:14px;overflow:hidden}
+.card.standalone{border-radius:var(--r)}
+
+/* ── SECTION AVG BAR ── */
+.avg-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fff;border:1px solid var(--gray-200);border-radius:var(--r);margin-bottom:10px}
+.avg-num{font-size:22px;font-weight:700;font-family:var(--mono);color:var(--blue)}
+.avg-lbl{font-size:9px;color:var(--gray-400);margin-bottom:1px}
+.r-pill{padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700}
+
+/* ── FIELD ── */
+.field{padding:12px 14px;border-bottom:1px solid var(--gray-50)}
+.field:last-child{border-bottom:none}
+.field.spec{background:var(--gray-50)}
+.fl{font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:2px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.fsub{font-size:10px;color:var(--gray-400);margin-bottom:7px;line-height:1.4}
+.fhint{font-size:10px;color:var(--amber);margin-top:5px;line-height:1.4}
+.req{color:var(--red);font-size:11px}
+.opt{font-size:9px;padding:1px 6px;border-radius:6px;background:var(--amber-l);color:var(--amber);font-weight:600}
+.spec-tag{font-size:9px;padding:1px 6px;border-radius:6px;background:var(--gray-200);color:var(--gray-500);font-weight:600}
+.score-live{font-size:10px;color:var(--gray-400);margin-left:auto;font-family:var(--mono)}
+.score-live b{color:var(--blue);font-weight:600}
+
+/* ── INPUTS ── */
+input[type=text],input[type=date],input[type=number],textarea,select{
+  width:100%;padding:9px 11px;border:1.5px solid var(--gray-200);border-radius:var(--r-sm);
+  font-family:var(--font);font-size:13px;color:var(--gray-900);background:#fff;
+  transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;appearance:none
+}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+textarea{min-height:66px;resize:vertical;line-height:1.5}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:28px}
+
+/* ── SCORE BUTTONS ── */
+.score-row{display:flex;gap:4px}
+.sb{flex:1;height:46px;border:1.5px solid var(--gray-200);border-radius:var(--r-sm);background:#fff;font-size:16px;font-weight:700;color:var(--gray-400);cursor:pointer;font-family:var(--mono);transition:all .12s;-webkit-tap-highlight-color:transparent}
+.sb:active{transform:scale(.95)}
+.sb.v1{background:#fee2e2;border-color:#f87171;color:#dc2626}
+.sb.v2{background:#ffedd5;border-color:#fb923c;color:#ea580c}
+.sb.v3{background:#fefce8;border-color:#facc15;color:#ca8a04}
+.sb.v4{background:#dcfce7;border-color:#4ade80;color:#16a34a}
+.sb.v5{background:#eff6ff;border-color:#60a5fa;color:#2563eb}
+.score-ends{display:flex;justify-content:space-between;font-size:9px;color:var(--gray-400);margin-top:3px;padding:0 2px}
+
+/* ── NOTE TOGGLE ── */
+.note-toggle{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:var(--blue);cursor:pointer;margin-top:7px;user-select:none}
+.note-area{display:none;margin-top:6px}
+.note-area.open{display:block}
+
+/* ── NAV BAR ── */
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--gray-100);padding:10px 12px;display:flex;gap:8px;z-index:150}
+.btn{flex:1;padding:12px;border-radius:var(--r-sm);font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .15s;text-align:center}
+.btn-p{background:var(--blue);color:#fff}
+.btn-p:hover{background:#1d4ed8}
+.btn-p:active{transform:scale(.98)}
+.btn-s{background:var(--gray-100);color:var(--gray-600)}
+.btn-s:hover{background:var(--gray-200)}
+.btn-g{background:var(--green);color:#fff}
+
+/* ── SUBMIT PAGE ── */
+.sum-card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--r);padding:18px;margin-bottom:12px}
+.total-block{background:var(--navy);color:#fff;border-radius:var(--r);padding:16px;display:flex;align-items:center;justify-content:space-between;margin:14px 0}
+.total-num{font-size:38px;font-weight:700;font-family:var(--mono)}
+.sec-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.sec-chip{background:var(--gray-50);border-radius:var(--r-sm);padding:10px;text-align:center}
+.sec-chip .v{font-size:20px;font-weight:700;font-family:var(--mono);color:var(--blue)}
+.sec-chip .l{font-size:9px;color:var(--gray-500);margin-top:1px}
+.cfg-box{background:var(--amber-l);border:1.5px dashed var(--amber-b);border-radius:var(--r);padding:14px;margin-bottom:14px}
+.cfg-box h4{font-size:12px;font-weight:600;color:#92400e;margin-bottom:6px}
+.cfg-box p{font-size:10px;color:#b45309;margin-top:5px;line-height:1.4}
+.status-ok{background:var(--green-l);border:1px solid var(--green-b);border-radius:var(--r);padding:14px;text-align:center;margin-bottom:12px}
+.status-ok h3{font-size:14px;font-weight:600;color:var(--green);margin-bottom:3px}
+.status-ok p{font-size:11px;color:#166534}
+.status-err{background:var(--red-l);border:1px solid var(--red-b);border-radius:var(--r);padding:14px;text-align:center;margin-bottom:12px}
+.status-err h3{font-size:14px;font-weight:600;color:var(--red);margin-bottom:3px}
+.status-err p{font-size:11px;color:#991b1b}
+.status-loading{background:var(--blue-l);border:1px solid var(--blue-b);border-radius:var(--r);padding:14px;text-align:center;margin-bottom:12px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:var(--gray-900);color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;z-index:999;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;font-weight:500}
+.toast.show{opacity:1}
+
+/* ── RATING GUIDE ── */
+.rg-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.rg-item{border-radius:var(--r-sm);padding:8px 10px}
+.rg-item .rv{font-size:16px;font-weight:700;font-family:var(--mono)}
+.rg-item .rl{font-size:10px;margin-top:1px}
+
+@media(min-width:480px){.sb{height:50px;font-size:18px}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-inner">
+    <div class="hdr-top">
+      <div class="brand">
+        <div class="brand-mark">RBS</div>
+        <div>
+          <div class="brand-name">Store Survey</div>
+          <div class="brand-sub">Retail Business Solution — Vietnam</div>
+        </div>
+      </div>
+      <div class="lang-wrap">
+        <button class="lang-btn on" onclick="setLang('en',this)">EN</button>
+        <button class="lang-btn" onclick="setLang('th',this)">TH</button>
+        <button class="lang-btn" onclick="setLang('vi',this)">VI</button>
+      </div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-track"><div class="prog-fill" id="progFill" style="width:14%"></div></div>
+      <div class="prog-meta"><span id="progStep">Step 1 / 7</span><span id="progPct">14%</span></div>
+    </div>
+  </div>
+  <div class="steps" id="stepsBar">
+    <div class="sp on" id="pill0" onclick="goTo(0)" data-en="1.Store" data-th="1.ร้านค้า" data-vi="1.Cửa hàng">1.Store</div>
+    <div class="sp" id="pill1" onclick="goTo(1)" data-en="2.Category" data-th="2.หมวด" data-vi="2.Danh mục">2.Category</div>
+    <div class="sp" id="pill2" onclick="goTo(2)" data-en="3.Shelf" data-th="3.ชั้นวาง" data-vi="3.Kệ hàng">3.Shelf</div>
+    <div class="sp" id="pill3" onclick="goTo(3)" data-en="4.Display" data-th="4.ดิสเพลย์" data-vi="4.Trưng bày">4.Display</div>
+    <div class="sp" id="pill4" onclick="goTo(4)" data-en="5.Flow" data-th="5.ทางเข้า" data-vi="5.Lối vào">5.Flow</div>
+    <div class="sp" id="pill5" onclick="goTo(5)" data-en="6.Other" data-th="6.อื่นๆ" data-vi="6.Khác">6.Other</div>
+    <div class="sp" id="pill6" onclick="goTo(6)" data-en="7.Submit" data-th="7.ส่งข้อมูล" data-vi="7.Gửi">7.Submit</div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════
+  PAGE 0: STORE INFO
+═══════════════════════════════════════ -->
+<div class="page on" id="page0">
+  <div class="sec-hdr" style="background:var(--navy)">
+    <h2 data-en="Store Basic Information" data-th="ข้อมูลพื้นฐานร้านค้า" data-vi="Thông tin cơ bản cửa hàng">Store Basic Information</h2>
+    <p data-en="Fill before starting the survey" data-th="กรอกก่อนเริ่มสำรวจ" data-vi="Điền trước khi bắt đầu khảo sát">Fill before starting the survey</p>
+  </div>
+  <div class="card">
+    <div class="field">
+      <div class="fl"><span data-en="Store Name" data-th="ชื่อร้านค้า" data-vi="Tên cửa hàng">Store Name</span><span class="req">*</span></div>
+      <input type="text" id="f-storeName" placeholder="e.g. Circle K Hanoi — Branch 01">
+    </div>
+    <div class="field">
+      <div class="fl"><span data-en="Chain / Brand" data-th="เชนหรือแบรนด์" data-vi="Chuỗi / Thương hiệu">Chain / Brand</span><span class="req">*</span></div>
+      <input type="text" id="f-chain" placeholder="e.g. Circle K, Winmart, Bach Hoa Xanh">
+    </div>
+    <div class="field">
+      <div class="fl"><span data-en="Industry" data-th="ประเภทธุรกิจ" data-vi="Ngành nghề">Industry</span><span class="req">*</span></div>
+      <select id="f-industry">
+        <option value="">--</option>
+        <option data-en="CVS (Convenience Store)" data-th="CVS (ร้านสะดวกซื้อ)" data-vi="CVS (Cửa hàng tiện lợi)">CVS (Convenience Store)</option>
+        <option data-en="Supermarket" data-th="ซุปเปอร์มาร์เก็ต" data-vi="Siêu thị">Supermarket</option>
+        <option data-en="Hypermarket" data-th="ไฮเปอร์มาร์เก็ต" data-vi="Đại siêu thị">Hypermarket</option>
+        <option data-en="Pharmacy" data-th="ร้านขายยา" data-vi="Nhà thuốc">Pharmacy</option>
+        <option data-en="Beauty" data-th="ความงาม" data-vi="Làm đẹp">Beauty</option>
+        <option data-en="Sport" data-th="กีฬา" data-vi="Thể thao">Sport</option>
+        <option data-en="Gift Shop" data-th="ร้านของขวัญ" data-vi="Cửa hàng quà tặng">Gift Shop</option>
+        <option data-en="IT / Electronics" data-th="IT / อิเล็กทรอนิกส์" data-vi="IT / Điện tử">IT / Electronics</option>
+      </select>
+    </div>
+    <div class="field">
+      <div class="fl"><span data-en="Location Type" data-th="ประเภททำเล" data-vi="Loại vị trí">Location Type</span></div>
+      <select id="f-locType">
+        <option value="">--</option>
+        <option data-en="City Centre" data-th="ใจกลางเมือง" data-vi="Trung tâm thành phố">City Centre</option>
+        <option data-en="Community" data-th="ชุมชน" data-vi="Khu dân cư">Community</option>
+        <option data-en="Tourist Area" data-th="แหล่งท่องเที่ยว" data-vi="Khu du lịch">Tourist Area</option>
+        <option data-en="Market" data-th="ตลาด" data-vi="Chợ">Market</option>
+        <option data-en="School / University" data-th="โรงเรียน / มหาวิทยาลัย" data-vi="Trường học / Đại học">School / University</option>
+        <option data-en="Department Store" data-th="ห้างสรรพสินค้า" data-vi="Trung tâm thương mại">Department Store</option>
+      </select>
+    </div>
+    <div class="field">
+      <div class="fl"><span data-en="Store Size (sqm)" data-th="ขนาดร้าน (ตร.ม.)" data-vi="Diện tích (m²)">Store Size (sqm)</span></div>
+      <input type="number" id="f-size" placeholder="e.g. 120">
+    </div>
+    <div class="field">
+      <div class="fl"><span data-en="Brand Positioning" data-th="ระดับแบรนด์" data-vi="Định vị thương hiệu">Brand Positioning</span></div>
+      <select id="f-brandPos">
+        <option value="">--</option>
+        <option data-en="Premium" data-th="พรีเมียม" data-vi="Cao cấp">Premium</option>
+        <option data-en="Mass" data-th="แมส" data-vi="Đại trà">Mass</option>
+        <option data-en="Local / Value" data-th="โลคอล / ราคาประหยัด" data-vi="Địa phương / Giá trị">Local / Value</option>
+      </select>
+    </div>
+    <div class="field">
+      <div class="fl"><span data-en="Foot Traffic" data-th="ปริมาณลูกค้า" data-vi="Lượng khách">Foot Traffic</span></div>
+      <select id="f-traffic">
+        <option value="">--</option>
+        <option data-en="Low" data-th="น้อย" data-vi="Thấp">Low</option>
+        <option data-en="Medium" data-th="ปานกลาง" data-vi="Trung bình">Medium</option>
+        <option data-en="High" data-th="มาก" data-vi="Cao">High</option>
+      </select>
+    </div>
+    <div class="field">
+      <div class="fl"><span data-en="First Impression (1–5)" data-th="ความประทับใจแรก (1–5)" data-vi="Ấn tượng đầu tiên (1–5)">First Impression (1–5)</span><span class="req">*</span></div>
+      <div class="fsub" data-en="Overall feeling when entering the store" data-th="ความรู้สึกโดยรวมเมื่อเข้าร้าน" data-vi="Cảm nhận tổng thể khi vào cửa hàng">Overall feeling when entering the store</div>
+      <div class="score-row" data-f="impression"></div>
+      <div class="score-ends"><span data-en="Very Poor" data-th="แย่มาก" data-vi="Rất kém">Very Poor</span><span data-en="Excellent" data-th="ดีเยี่ยม" data-vi="Xuất sắc">Excellent</span></div>
+    </div>
+    <div class="field">
+      <div class="fl"><span data-en="Surveyor Name" data-th="ชื่อผู้สำรวจ" data-vi="Tên người khảo sát">Surveyor Name</span><span class="req">*</span></div>
+      <input type="text" id="f-surveyor" placeholder="Full name">
+    </div>
+    <div class="field">
+      <div class="fl"><span data-en="Survey Date" data-th="วันที่สำรวจ" data-vi="Ngày khảo sát">Survey Date</span><span class="req">*</span></div>
+      <input type="date" id="f-date">
+    </div>
+    <div class="field">
+      <div class="fl"><span data-en="Contact Person" data-th="ผู้ติดต่อในร้าน" data-vi="Người liên hệ">Contact Person</span></div>
+      <input type="text" id="f-contact" placeholder="Name & role / ชื่อ-ตำแหน่ง / Tên & chức vụ">
+    </div>
+    <div class="field" style="background:var(--amber-l)">
+      <div class="fl"><span data-en="Capex Budget (Est.)" data-th="งบลงทุนโดยประมาณ" data-vi="Ngân sách ước tính">Capex Budget (Est.)</span><span class="opt" data-en="Optional" data-th="ถ้าถามได้" data-vi="Nếu hỏi được">Optional</span></div>
+      <select id="f-budget">
+        <option value="" data-en="Not asked" data-th="ไม่ได้ถาม" data-vi="Không hỏi">Not asked</option>
+        <option>&lt; 500K THB</option><option>500K – 2M THB</option>
+        <option>2M – 5M THB</option><option>&gt; 5M THB</option>
+      </select>
+      <div class="fhint" data-en='Try: "Do you have a renovation budget this year?"' data-th='ลองถาม: "ปีนี้มีแผนปรับปรุงร้านไหมครับ?"' data-vi='Thử hỏi: "Năm nay cửa hàng có kế hoạch cải tạo không?"'>Try: "Do you have a renovation budget this year?"</div>
+    </div>
+    <div class="field" style="background:var(--amber-l)">
+      <div class="fl"><span data-en="Decision Timeline" data-th="ระยะเวลาตัดสินใจ" data-vi="Thời gian quyết định">Decision Timeline</span><span class="opt" data-en="Optional" data-th="ถ้าถามได้" data-vi="Nếu hỏi được">Optional</span></div>
+      <select id="f-timeline">
+        <option value="" data-en="Not asked" data-th="ไม่ได้ถาม" data-vi="Không hỏi">Not asked</option>
+        <option data-en="Within 1 month" data-th="ภายใน 1 เดือน" data-vi="Trong 1 tháng">Within 1 month</option>
+        <option data-en="Within this quarter" data-th="ภายในไตรมาสนี้" data-vi="Trong quý này">Within this quarter</option>
+        <option data-en="Within 6 months" data-th="ภายใน 6 เดือน" data-vi="Trong 6 tháng">Within 6 months</option>
+        <option data-en="Next year" data-th="ปีหน้า" data-vi="Năm sau">Next year</option>
+      </select>
+    </div>
+    <div class="field" style="background:var(--amber-l)">
+      <div class="fl"><span data-en="Pain Point (Manager Said)" data-th="Pain Point ที่ผู้จัดการพูด" data-vi="Vấn đề quản lý đề cập">Pain Point (Manager Said)</span><span class="opt" data-en="Optional" data-th="ถ้าได้ยิน" data-vi="Nếu có">Optional</span></div>
+      <textarea id="f-pain" placeholder="Record key phrases / บันทึกคำพูดสำคัญ / Ghi lại câu quan trọng"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+  PAGE 1: CATEGORY & PLANOGRAM (25%)
+═══════════════════════════════════════ -->
+<div class="page" id="page1">
+  <div class="avg-bar"><div><div class="avg-lbl" data-en="Section Score" data-th="คะแนน Section" data-vi="Điểm phần">Section Score</div><div class="avg-num" id="avg1">—</div></div><div class="r-pill" id="rp1" style="background:var(--gray-100);color:var(--gray-500)" data-en="Not scored" data-th="ยังไม่ให้คะแนน" data-vi="Chưa chấm">Not scored</div></div>
+  <div class="sec-hdr" style="background:#1e40af">
+    <h2 data-en="Category & Planogram" data-th="หมวดสินค้าและการจัดวาง" data-vi="Danh mục & Planogram">Category & Planogram</h2>
+    <p data-en="Product mix, space allocation, planogram system" data-th="สินค้า พื้นที่ ระบบ planogram" data-vi="Hỗn hợp sản phẩm, phân bổ diện tích, hệ thống planogram">Product mix, space allocation, planogram system</p>
+    <div class="wt-badge">★ Weight 25% — Highest impact</div>
+  </div>
+  <div class="card" id="card1">
+    <div class="field" data-f="cat1" data-sec="1">
+      <div class="fl"><span data-en="Product mix completeness" data-th="ความครบของสินค้า" data-vi="Độ đầy đủ của hàng hóa">Product mix completeness</span><div class="score-live"><b id="sv-cat1">—</b>/5</div></div>
+      <div class="fsub" data-en="Are key categories present and well-stocked?" data-th="มีหมวดสำคัญครบและสต็อกดีหรือไม่" data-vi="Các danh mục chính có đầy đủ không?">Are key categories present and well-stocked?</div>
+      <div class="score-row" data-f="cat1" data-sec="1"></div>
+      <div class="score-ends"><span data-en="Very incomplete" data-th="ขาดมาก" data-vi="Rất thiếu">Very incomplete</span><span data-en="Very complete" data-th="ครบมาก" data-vi="Rất đầy đủ">Very complete</span></div>
+      <span class="note-toggle" onclick="toggleNote(this)">+ <span data-en="Add note" data-th="เพิ่มหมายเหตุ" data-vi="Thêm ghi chú">Add note</span></span>
+      <div class="note-area"><textarea id="n-cat1" placeholder="Note / หมายเหตุ / Ghi chú"></textarea></div>
+    </div>
+    <div class="field" data-f="cat2" data-sec="1">
+      <div class="fl"><span data-en="Category space allocation" data-th="สัดส่วนพื้นที่หมวดสินค้า" data-vi="Phân bổ diện tích danh mục">Category space allocation</span><div class="score-live"><b id="sv-cat2">—</b>/5</div></div>
+      <div class="fsub" data-en="Balance between Beverage / Snack / HPC / Other" data-th="สมดุลระหว่าง เครื่องดื่ม / ขนม / HPC / อื่นๆ" data-vi="Cân bằng giữa Đồ uống / Snack / HPC / Khác">Balance between Beverage / Snack / HPC / Other</div>
+      <div class="score-row" data-f="cat2" data-sec="1"></div>
+      <div class="score-ends"><span data-en="Poorly balanced" data-th="ไม่สมดุล" data-vi="Mất cân bằng">Poorly balanced</span><span data-en="Well balanced" data-th="สมดุลดี" data-vi="Cân bằng tốt">Well balanced</span></div>
+      <span class="note-toggle" onclick="toggleNote(this)">+ <span data-en="Add note" data-th="เพิ่มหมายเหตุ" data-vi="Thêm ghi chú">Add note</span></span>
+      <div class="note-area"><textarea id="n-cat2" placeholder="e.g. 60% beverage, 20% snack..."></textarea></div>
+    </div>
+    <div class="field" data-f="cat3" data-sec="1">
+      <div class="fl"><span data-en="Planogram consistency" data-th="ความสม่ำเสมอ planogram" data-vi="Tính nhất quán planogram">Planogram consistency</span><div class="score-live"><b id="sv-cat3">—</b>/5</div></div>
+      <div class="fsub" data-en="Same layout across branches? Systematic arrangement?" data-th="ทุกสาขาจัดเหมือนกันหรือไม่ มีระบบ?" data-vi="Cùng bố cục giữa các chi nhánh? Có hệ thống?">Same layout across branches? Systematic arrangement?</div>
+      <div class="score-row" data-f="cat3" data-sec="1"></div>
+      <div class="score-ends"><span data-en="No system" data-th="ไม่มีระบบ" data-vi="Không hệ thống">No system</span><span data-en="Fully systematic" data-th="เป็นระบบมาก" data-vi="Rất có hệ thống">Fully systematic</span></div>
+    </div>
+    <div class="field" data-f="cat4" data-sec="1">
+      <div class="fl"><span data-en="Price tag & data strip" data-th="ป้ายราคาและ data strip" data-vi="Nhãn giá & data strip">Price tag & data strip</span><div class="score-live"><b id="sv-cat4">—</b>/5</div></div>
+      <div class="fsub" data-en="Complete, readable, consistent price tagging" data-th="ครบ อ่านง่าย สม่ำเสมอ" data-vi="Đầy đủ, dễ đọc, nhất quán">Complete, readable, consistent price tagging</div>
+      <div class="score-row" data-f="cat4" data-sec="1"></div>
+      <div class="score-ends"><span data-en="Missing / unclear" data-th="ขาด / ไม่ชัด" data-vi="Thiếu / không rõ">Missing / unclear</span><span data-en="Perfect" data-th="สมบูรณ์" data-vi="Hoàn hảo">Perfect</span></div>
+    </div>
+    <div class="field" data-f="cat5" data-sec="1">
+      <div class="fl"><span data-en="Stock depth & availability" data-th="ความลึกและความพร้อมสต็อก" data-vi="Độ sâu & tính sẵn có hàng tồn">Stock depth & availability</span><div class="score-live"><b id="sv-cat5">—</b>/5</div></div>
+      <div class="fsub" data-en="Are shelves full? Out-of-stock items observed?" data-th="ชั้นเต็มหรือไม่ มีสินค้าขาดไหม" data-vi="Kệ có đầy không? Có mặt hàng hết không?">Are shelves full? Out-of-stock items observed?</div>
+      <div class="score-row" data-f="cat5" data-sec="1"></div>
+      <div class="score-ends"><span data-en="Many out-of-stock" data-th="ขาดสินค้ามาก" data-vi="Nhiều hàng hết">Many out-of-stock</span><span data-en="Fully stocked" data-th="เต็มทุกชั้น" data-vi="Đầy kho">Fully stocked</span></div>
+    </div>
+    <div class="field" data-f="cat6" data-sec="1">
+      <div class="fl"><span data-en="Impulse zone placement" data-th="ตำแหน่งสินค้ากระตุ้นการซื้อ" data-vi="Vị trí khu vực mua ngẫu hứng">Impulse zone placement</span><div class="score-live"><b id="sv-cat6">—</b>/5</div></div>
+      <div class="fsub" data-en="Promo / new products in main traffic flow?" data-th="สินค้าโปรโมชั่น / ใหม่ อยู่ใน flow หลักหรือไม่" data-vi="Hàng khuyến mãi / mới có trong luồng chính không?">Promo / new products in main traffic flow?</div>
+      <div class="score-row" data-f="cat6" data-sec="1"></div>
+      <div class="score-ends"><span data-en="Hidden / wrong spot" data-th="ซ่อน / ผิดจุด" data-vi="Khuất / sai chỗ">Hidden / wrong spot</span><span data-en="Prime position" data-th="ตำแหน่งดีมาก" data-vi="Vị trí đắc địa">Prime position</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+  PAGE 2: SHELF SYSTEM (15% quality + spec)
+═══════════════════════════════════════ -->
+<div class="page" id="page2">
+  <div class="avg-bar"><div><div class="avg-lbl" data-en="Quality Score" data-th="คะแนนคุณภาพ" data-vi="Điểm chất lượng">Quality Score</div><div class="avg-num" id="avg2">—</div></div><div class="r-pill" id="rp2" style="background:var(--gray-100);color:var(--gray-500)" data-en="Not scored" data-th="ยังไม่ให้คะแนน" data-vi="Chưa chấm">Not scored</div></div>
+  <div class="sec-hdr" style="background:#1e3a8a">
+    <h2 data-en="Shelf System — Quality" data-th="ชั้นวาง — คุณภาพ" data-vi="Kệ hàng — Chất lượng">Shelf System — Quality</h2>
+    <p data-en="Score the quality — record spec separately below" data-th="ให้คะแนนคุณภาพ — บันทึกสเปคด้านล่าง" data-vi="Chấm điểm chất lượng — ghi spec riêng bên dưới">Score the quality — record spec separately below</p>
+    <div class="wt-badge">★ Weight 15%</div>
+  </div>
+  <div class="card">
+    <div class="field"><div class="fl"><span data-en="Material quality & durability" data-th="คุณภาพและความทนทานวัสดุ" data-vi="Chất lượng & độ bền vật liệu">Material quality & durability</span><div class="score-live"><b id="sv-sh1">—</b>/5</div></div><div class="score-row" data-f="sh1" data-sec="2"></div><div class="score-ends"><span data-en="Poor" data-th="ต่ำ" data-vi="Kém">Poor</span><span data-en="Excellent" data-th="ดีเยี่ยม" data-vi="Xuất sắc">Excellent</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Structural stability" data-th="ความมั่นคงแข็งแรง" data-vi="Độ ổn định kết cấu">Structural stability</span><div class="score-live"><b id="sv-sh2">—</b>/5</div></div><div class="score-row" data-f="sh2" data-sec="2"></div><div class="score-ends"><span data-en="Risk / unsafe" data-th="อันตราย" data-vi="Nguy hiểm">Risk / unsafe</span><span data-en="Very stable" data-th="แข็งแรงมาก" data-vi="Rất vững">Very stable</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Load capacity adequacy" data-th="น้ำหนักรับได้เพียงพอ" data-vi="Tải trọng phù hợp">Load capacity adequacy</span><div class="score-live"><b id="sv-sh3">—</b>/5</div></div><div class="score-row" data-f="sh3" data-sec="2"></div><div class="score-ends"><span data-en="Insufficient" data-th="ไม่พอ" data-vi="Không đủ">Insufficient</span><span data-en="More than enough" data-th="มากกว่าพอ" data-vi="Hơn đủ">More than enough</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Adjustability / flexibility" data-th="ปรับระดับชั้นได้ง่าย" data-vi="Khả năng điều chỉnh">Adjustability / flexibility</span><div class="score-live"><b id="sv-sh4">—</b>/5</div></div><div class="score-row" data-f="sh4" data-sec="2"></div><div class="score-ends"><span data-en="Fixed / rigid" data-th="ปรับไม่ได้" data-vi="Cố định">Fixed / rigid</span><span data-en="Very flexible" data-th="ยืดหยุ่นมาก" data-vi="Rất linh hoạt">Very flexible</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Overall condition & age" data-th="สภาพรวมและอายุการใช้งาน" data-vi="Tình trạng & tuổi thọ tổng thể">Overall condition & age</span><div class="score-live"><b id="sv-sh5">—</b>/5</div></div><div class="score-row" data-f="sh5" data-sec="2"></div><div class="score-ends"><span data-en="Old / replace now" data-th="เก่า / ควรเปลี่ยน" data-vi="Cũ / cần thay">Old / replace now</span><span data-en="Brand new" data-th="ใหม่มาก" data-vi="Như mới">Brand new</span></div></div>
+  </div>
+  <div class="sec-hdr" style="background:var(--gray-600);border-radius:var(--r) var(--r) 0 0">
+    <h2 data-en="Shelf Spec Record (no scoring)" data-th="บันทึกสเปคชั้วาง (ไม่ให้คะแนน)" data-vi="Ghi thông số kệ (không chấm điểm)">Shelf Spec Record (no scoring)</h2>
+    <p data-en="Fill what you can — photo reference is fine" data-th="กรอกเท่าที่ทำได้ — อ้างอิงรูปถ่ายได้" data-vi="Điền những gì có thể — tham chiếu ảnh cũng được">Fill what you can — photo reference is fine</p>
+  </div>
+  <div class="card">
+    <div class="field spec"><div class="fl"><span data-en="Material type" data-th="ประเภทวัสดุ" data-vi="Loại vật liệu">Material type</span><span class="spec-tag">SPEC</span></div><select id="f-shMat"><option value="">--</option><option>Steel</option><option>Wood</option><option>Wire</option><option>Mixed</option></select></div>
+    <div class="field spec"><div class="fl"><span data-en="Wall shelf W × D × H (mm)" data-th="ชั้นผนัง W × D × H (มม.)" data-vi="Kệ tường W × D × H (mm)">Wall shelf W × D × H (mm)</span><span class="spec-tag">SPEC</span></div><input type="text" id="f-shWall" placeholder="e.g. 900 × 350 × 1800"></div>
+    <div class="field spec"><div class="fl"><span data-en="Gondola / middle shelf (mm)" data-th="กอนโดลา / ชั้นกลาง (มม.)" data-vi="Gondola / kệ giữa (mm)">Gondola / middle shelf (mm)</span><span class="spec-tag">SPEC</span></div><input type="text" id="f-shGond" placeholder="e.g. 1200 × 450 × 1600"></div>
+    <div class="field spec"><div class="fl"><span data-en="Hole pitch range (mm)" data-th="ระยะรู pitch (มม.)" data-vi="Khoảng cách lỗ pitch (mm)">Hole pitch range (mm)</span><span class="spec-tag">SPEC</span></div><input type="text" id="f-shPitch" placeholder="e.g. 25–50"></div>
+    <div class="field spec"><div class="fl"><span data-en="Hole type" data-th="ประเภทรู" data-vi="Loại lỗ">Hole type</span><span class="spec-tag">SPEC</span></div><select id="f-shHole"><option value="">--</option><option>Round</option><option>Square</option><option>Oval</option></select></div>
+    <div class="field spec"><div class="fl"><span data-en="Colour" data-th="สี" data-vi="Màu sắc">Colour</span><span class="spec-tag">SPEC</span></div><input type="text" id="f-shCol" placeholder="e.g. RAL 9016 / White / Chrome"></div>
+    <div class="field spec"><div class="fl"><span data-en="Additional notes (kickplate, bracket, leg type…)" data-th="หมายเหตุเพิ่มเติม (ฐาน, bracket, ขา…)" data-vi="Ghi chú thêm (chân đế, bracket, loại chân…)">Additional notes</span><span class="spec-tag">SPEC</span></div><textarea id="f-shNotes" placeholder="Kickplate / Back panel / Bracket / Pole / Leg type…"></textarea></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+  PAGE 3: DISPLAY + VISUAL MERCH (10+20%)
+═══════════════════════════════════════ -->
+<div class="page" id="page3">
+  <div class="avg-bar"><div><div class="avg-lbl" data-en="Section Score" data-th="คะแนน" data-vi="Điểm">Section Score</div><div class="avg-num" id="avg3">—</div></div><div class="r-pill" id="rp3" style="background:var(--gray-100);color:var(--gray-500)" data-en="Not scored" data-th="ยังไม่ให้คะแนน" data-vi="Chưa chấm">Not scored</div></div>
+  <div class="sec-hdr" style="background:#92400e;border-radius:var(--r) var(--r) 0 0">
+    <h2 data-en="Special Display" data-th="ดิสเพลย์พิเศษ" data-vi="Trưng bày đặc biệt">Special Display</h2>
+    <p data-en="End-cap, floor stand, step display" data-th="end-cap, floor stand, step display" data-vi="End-cap, kệ sàn, kệ bậc">End-cap, floor stand, step display</p>
+    <div class="wt-badge">Weight 10%</div>
+  </div>
+  <div class="card">
+    <div class="field"><div class="fl"><span data-en="Display design appeal" data-th="ความน่าสนใจของดิสเพลย์" data-vi="Sức hút thiết kế trưng bày">Display design appeal</span><div class="score-live"><b id="sv-dp1">—</b>/5</div></div><div class="score-row" data-f="dp1" data-sec="3"></div><div class="score-ends"><span data-en="Not appealing" data-th="ไม่น่าสนใจ" data-vi="Không hấp dẫn">Not appealing</span><span data-en="Very eye-catching" data-th="ดึงดูดมาก" data-vi="Rất thu hút">Very eye-catching</span></div><span class="note-toggle" onclick="toggleNote(this)">+ <span data-en="Add note" data-th="เพิ่มหมายเหตุ" data-vi="Thêm ghi chú">Add note</span></span><div class="note-area"><textarea id="n-dp1" placeholder="Type / Material / Location…"></textarea></div></div>
+    <div class="field"><div class="fl"><span data-en="Flexibility & reconfiguration" data-th="ความยืดหยุ่นในการปรับ" data-vi="Tính linh hoạt & tái cấu hình">Flexibility & reconfiguration</span><div class="score-live"><b id="sv-dp2">—</b>/5</div></div><div class="score-row" data-f="dp2" data-sec="3"></div><div class="score-ends"><span data-en="Rigid / fixed" data-th="ปรับไม่ได้" data-vi="Cố định">Rigid / fixed</span><span data-en="Very flexible" data-th="ยืดหยุ่นมาก" data-vi="Rất linh hoạt">Very flexible</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Supplier branding utilization" data-th="การใช้พื้นที่แบรนดิ้ง supplier" data-vi="Sử dụng thương hiệu nhà cung cấp">Supplier branding utilization</span><div class="score-live"><b id="sv-dp3">—</b>/5</div></div><div class="score-row" data-f="dp3" data-sec="3"></div><div class="score-ends"><span data-en="None" data-th="ไม่มีเลย" data-vi="Không có">None</span><span data-en="Excellent" data-th="ดีเยี่ยม" data-vi="Xuất sắc">Excellent</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Display location in store" data-th="ตำแหน่งดิสเพลย์ในร้าน" data-vi="Vị trí trưng bày trong cửa hàng">Display location in store</span><div class="score-live"><b id="sv-dp4">—</b>/5</div></div><div class="score-row" data-f="dp4" data-sec="3"></div><div class="score-ends"><span data-en="Hidden" data-th="ซ่อนอยู่" data-vi="Khuất">Hidden</span><span data-en="Prime spot" data-th="จุดดีที่สุด" data-vi="Vị trí đắc địa">Prime spot</span></div></div>
+  </div>
+  <div class="sec-hdr" style="background:#166534;border-radius:var(--r) var(--r) 0 0">
+    <h2 data-en="Visual Merchandising" data-th="ภาพรวมการจัดสินค้า" data-vi="Trình bày hàng hóa trực quan">Visual Merchandising</h2>
+    <p data-en="Alignment, cleanliness, lighting, overall impression" data-th="ความเป็นระเบียบ ความสะอาด แสง ภาพรวม" data-vi="Trật tự, sạch sẽ, ánh sáng, ấn tượng tổng thể">Alignment, cleanliness, lighting, overall impression</p>
+    <div class="wt-badge">★ Weight 20%</div>
+  </div>
+  <div class="card">
+    <div class="field"><div class="fl"><span data-en="Shelf alignment & tidiness" data-th="ความเป็นระเบียบของชั้น" data-vi="Sự ngay ngắn & gọn gàng">Shelf alignment & tidiness</span><div class="score-live"><b id="sv-vm1">—</b>/5</div></div><div class="score-row" data-f="vm1" data-sec="3"></div><div class="score-ends"><span data-en="Chaotic" data-th="รกมาก" data-vi="Lộn xộn">Chaotic</span><span data-en="Perfectly neat" data-th="เรียบร้อยมาก" data-vi="Rất gọn gàng">Perfectly neat</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Cleanliness (floor, shelf, product)" data-th="ความสะอาด (พื้น ชั้น สินค้า)" data-vi="Sạch sẽ (sàn, kệ, sản phẩm)">Cleanliness</span><div class="score-live"><b id="sv-vm2">—</b>/5</div></div><div class="score-row" data-f="vm2" data-sec="3"></div><div class="score-ends"><span data-en="Dirty" data-th="สกปรก" data-vi="Bẩn">Dirty</span><span data-en="Spotless" data-th="สะอาดมาก" data-vi="Sạch bóng">Spotless</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Shelf utilization rate" data-th="อัตราการใช้พื้นที่ชั้น" data-vi="Tỷ lệ sử dụng kệ">Shelf utilization rate</span><div class="score-live"><b id="sv-vm3">—</b>/5</div></div><div class="score-row" data-f="vm3" data-sec="3"></div><div class="score-ends"><span data-en="Under / over used" data-th="น้อยเกิน / แน่นเกิน" data-vi="Thiếu / dư">Under / over used</span><span data-en="Optimal" data-th="เหมาะมาก" data-vi="Tối ưu">Optimal</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Product lighting quality" data-th="แสงสว่างบนสินค้า" data-vi="Chất lượng ánh sáng sản phẩm">Product lighting quality</span><div class="score-live"><b id="sv-vm4">—</b>/5</div></div><div class="score-row" data-f="vm4" data-sec="3"></div><div class="score-ends"><span data-en="Poor / dark" data-th="มืด / ไม่ดี" data-vi="Kém / tối">Poor / dark</span><span data-en="Excellent" data-th="ดีมาก" data-vi="Xuất sắc">Excellent</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Overall visual impression" data-th="ความประทับใจโดยรวม" data-vi="Ấn tượng trực quan tổng thể">Overall visual impression</span><div class="score-live"><b id="sv-vm5">—</b>/5</div></div><div class="fsub" data-en="If you were a customer, would you want to buy?" data-th="ถ้าคุณเป็นลูกค้า อยากซื้อหรือเปล่า" data-vi="Nếu bạn là khách, bạn có muốn mua không?">If you were a customer, would you want to buy?</div><div class="score-row" data-f="vm5" data-sec="3"></div><div class="score-ends"><span data-en="Would not buy" data-th="ไม่อยากซื้อ" data-vi="Không muốn mua">Would not buy</span><span data-en="Definitely buy" data-th="อยากซื้อมาก" data-vi="Chắc chắn mua">Definitely buy</span></div><span class="note-toggle" onclick="toggleNote(this)">+ <span data-en="Add note" data-th="เพิ่มหมายเหตุ" data-vi="Thêm ghi chú">Add note</span></span><div class="note-area"><textarea id="n-vm5" placeholder="Overall impression notes…"></textarea></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+  PAGE 4: ENTRANCE + FLOW (8+15%)
+═══════════════════════════════════════ -->
+<div class="page" id="page4">
+  <div class="avg-bar"><div><div class="avg-lbl" data-en="Section Score" data-th="คะแนน" data-vi="Điểm">Section Score</div><div class="avg-num" id="avg4">—</div></div><div class="r-pill" id="rp4" style="background:var(--gray-100);color:var(--gray-500)" data-en="Not scored" data-th="ยังไม่ให้คะแนน" data-vi="Chưa chấm">Not scored</div></div>
+  <div class="sec-hdr" style="background:#1e40af;border-radius:var(--r) var(--r) 0 0">
+    <h2 data-en="Entrance & Signage" data-th="ป้ายและทางเข้า" data-vi="Biển hiệu & lối vào">Entrance & Signage</h2>
+    <p data-en="Exterior visibility, lighting, brand communication" data-th="การมองเห็นจากนอก แสง สื่อสารแบรนด์" data-vi="Khả năng nhìn thấy từ ngoài, ánh sáng, thông tin thương hiệu">Exterior visibility, lighting, brand communication</p>
+    <div class="wt-badge">Weight 8%</div>
+  </div>
+  <div class="card">
+    <div class="field"><div class="fl"><span data-en="Exterior visibility & signage" data-th="ป้ายเห็นชัดจากภายนอก" data-vi="Khả năng nhìn thấy & biển hiệu">Exterior visibility & signage</span><div class="score-live"><b id="sv-en1">—</b>/5</div></div><div class="score-row" data-f="en1" data-sec="4"></div><div class="score-ends"><span data-en="Invisible" data-th="มองไม่เห็น" data-vi="Không thấy">Invisible</span><span data-en="Very clear" data-th="ชัดมาก" data-vi="Rất rõ">Very clear</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Entrance lighting quality" data-th="แสงบริเวณทางเข้า" data-vi="Chất lượng ánh sáng lối vào">Entrance lighting quality</span><div class="score-live"><b id="sv-en2">—</b>/5</div></div><div class="score-row" data-f="en2" data-sec="4"></div><div class="score-ends"><span data-en="Dark / poor" data-th="มืด / ไม่ดี" data-vi="Tối / kém">Dark / poor</span><span data-en="Bright & welcoming" data-th="สว่าง ดึงดูด" data-vi="Sáng & thân thiện">Bright & welcoming</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Promotional display at entrance" data-th="โปรโมชั่นหน้าร้าน" data-vi="Trưng bày khuyến mãi lối vào">Promotional display at entrance</span><div class="score-live"><b id="sv-en3">—</b>/5</div></div><div class="score-row" data-f="en3" data-sec="4"></div><div class="score-ends"><span data-en="None" data-th="ไม่มีเลย" data-vi="Không có">None</span><span data-en="Excellent" data-th="ดีเยี่ยม" data-vi="Xuất sắc">Excellent</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Brand communication materials" data-th="สื่อสื่อสารแบรนด์" data-vi="Tài liệu truyền thông thương hiệu">Brand communication materials</span><div class="score-live"><b id="sv-en4">—</b>/5</div></div><div class="score-row" data-f="en4" data-sec="4"></div><div class="score-ends"><span data-en="None" data-th="ไม่มีเลย" data-vi="Không có">None</span><span data-en="Strong branding" data-th="แบรนดิ้งชัดเจน" data-vi="Thương hiệu mạnh">Strong branding</span></div></div>
+  </div>
+  <div class="sec-hdr" style="background:#1e3a5f;border-radius:var(--r) var(--r) 0 0">
+    <h2 data-en="Store Flow & Layout" data-th="การจัดวางและ flow ร้าน" data-vi="Luồng & bố cục cửa hàng">Store Flow & Layout</h2>
+    <p data-en="Walkway, dead zones, customer navigation" data-th="ทางเดิน มุมอับ การนำทางลูกค้า" data-vi="Lối đi, khu vực chết, điều hướng khách">Walkway, dead zones, customer navigation</p>
+    <div class="wt-badge">★ Weight 15%</div>
+  </div>
+  <div class="card">
+    <div class="field"><div class="fl"><span data-en="Walkway width adequacy" data-th="ความกว้างทางเดิน" data-vi="Độ rộng lối đi">Walkway width adequacy</span><div class="score-live"><b id="sv-fl1">—</b>/5</div></div><div class="score-row" data-f="fl1" data-sec="4"></div><div class="score-ends"><span data-en="Very narrow" data-th="แคบมาก" data-vi="Rất hẹp">Very narrow</span><span data-en="Very spacious" data-th="กว้างมาก" data-vi="Rất rộng">Very spacious</span></div><span class="note-toggle" onclick="toggleNote(this)">+ <span data-en="Add note" data-th="เพิ่มหมายเหตุ" data-vi="Thêm ghi chú">Add note</span></span><div class="note-area"><textarea id="n-fl1" placeholder="Approx. cm / ประมาณ cm / Khoảng cm"></textarea></div></div>
+    <div class="field"><div class="fl"><span data-en="Customer flow clarity" data-th="ความชัดเจน flow ลูกค้า" data-vi="Sự rõ ràng luồng khách">Customer flow clarity</span><div class="score-live"><b id="sv-fl2">—</b>/5</div></div><div class="score-row" data-f="fl2" data-sec="4"></div><div class="score-ends"><span data-en="Confused / no flow" data-th="สับสน ไม่มี flow" data-vi="Lộn xộn / không có luồng">Confused / no flow</span><span data-en="Clear natural flow" data-th="flow ชัดมาก" data-vi="Luồng tự nhiên rõ">Clear natural flow</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Dead zone management" data-th="การจัดการมุมอับ" data-vi="Quản lý khu vực chết">Dead zone management</span><div class="score-live"><b id="sv-fl3">—</b>/5</div></div><div class="score-row" data-f="fl3" data-sec="4"></div><div class="score-ends"><span data-en="Many dead zones" data-th="มุมอับเยอะมาก" data-vi="Nhiều khu vực chết">Many dead zones</span><span data-en="No dead zones" data-th="ไม่มีมุมอับ" data-vi="Không có khu vực chết">No dead zones</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Category navigation ease" data-th="นำทางระหว่างหมวดได้ง่าย" data-vi="Dễ điều hướng danh mục">Category navigation ease</span><div class="score-live"><b id="sv-fl4">—</b>/5</div></div><div class="score-row" data-f="fl4" data-sec="4"></div><div class="score-ends"><span data-en="Confusing" data-th="สับสน" data-vi="Khó hiểu">Confusing</span><span data-en="Very intuitive" data-th="ง่ายมาก" data-vi="Rất trực quan">Very intuitive</span></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+  PAGE 5: CHECKOUT + REFRIGERATION + ANALYSIS
+═══════════════════════════════════════ -->
+<div class="page" id="page5">
+  <div class="avg-bar"><div><div class="avg-lbl" data-en="Section Score" data-th="คะแนน" data-vi="Điểm">Section Score</div><div class="avg-num" id="avg5">—</div></div><div class="r-pill" id="rp5" style="background:var(--gray-100);color:var(--gray-500)" data-en="Not scored" data-th="ยังไม่ให้คะแนน" data-vi="Chưa chấm">Not scored</div></div>
+  <div class="sec-hdr" style="background:#92400e;border-radius:var(--r) var(--r) 0 0">
+    <h2 data-en="Checkout Zone" data-th="จุดชำระเงิน" data-vi="Khu vực thanh toán">Checkout Zone</h2>
+    <div class="wt-badge">Weight 4%</div>
+  </div>
+  <div class="card">
+    <div class="field"><div class="fl"><span data-en="Impulse product placement" data-th="สินค้าจุกจิกตรงเคาน์เตอร์" data-vi="Vị trí hàng mua ngẫu hứng">Impulse product placement</span><div class="score-live"><b id="sv-co1">—</b>/5</div></div><div class="score-row" data-f="co1" data-sec="5"></div><div class="score-ends"><span data-en="None / poor" data-th="ไม่มี / แย่" data-vi="Không có / kém">None / poor</span><span data-en="Excellent" data-th="ดีมาก" data-vi="Xuất sắc">Excellent</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Queue management" data-th="การจัดการคิว" data-vi="Quản lý hàng chờ">Queue management</span><div class="score-live"><b id="sv-co2">—</b>/5</div></div><div class="score-row" data-f="co2" data-sec="5"></div><div class="score-ends"><span data-en="Chaotic" data-th="วุ่นวาย" data-vi="Hỗn loạn">Chaotic</span><span data-en="Very smooth" data-th="ราบรื่นมาก" data-vi="Rất trôi chảy">Very smooth</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Digital payment visibility" data-th="ป้ายชำระเงินดิจิทัล" data-vi="Khả năng hiển thị thanh toán số">Digital payment visibility</span><div class="score-live"><b id="sv-co3">—</b>/5</div></div><div class="score-row" data-f="co3" data-sec="5"></div><div class="score-ends"><span data-en="None" data-th="ไม่มีเลย" data-vi="Không có">None</span><span data-en="Very clear" data-th="ชัดมาก" data-vi="Rất rõ">Very clear</span></div></div>
+    <div class="field spec"><div class="fl"><span data-en="Counter material" data-th="วัสดุเคาน์เตอร์" data-vi="Vật liệu quầy">Counter material</span><span class="spec-tag">SPEC</span></div><select id="f-coMat"><option value="">--</option><option>Wood</option><option>Steel</option><option>Mixed</option></select></div>
+  </div>
+  <div class="sec-hdr" style="background:#1e3a5f;border-radius:var(--r) var(--r) 0 0">
+    <h2 data-en="Refrigeration & Equipment" data-th="ตู้เย็นและอุปกรณ์" data-vi="Tủ lạnh & thiết bị">Refrigeration & Equipment</h2>
+    <div class="wt-badge">Weight 3%</div>
+  </div>
+  <div class="card">
+    <div class="field"><div class="fl"><span data-en="Refrigerator condition & coverage" data-th="สภาพและความครอบคลุมตู้เย็น" data-vi="Tình trạng & độ bao phủ tủ lạnh">Refrigerator condition & coverage</span><div class="score-live"><b id="sv-rf1">—</b>/5</div></div><div class="score-row" data-f="rf1" data-sec="5"></div><div class="score-ends"><span data-en="Poor / insufficient" data-th="แย่ / ไม่พอ" data-vi="Kém / không đủ">Poor / insufficient</span><span data-en="Excellent" data-th="ดีมาก" data-vi="Xuất sắc">Excellent</span></div></div>
+    <div class="field"><div class="fl"><span data-en="Cold chain product variety" data-th="ความหลากหลายสินค้า cold chain" data-vi="Đa dạng sản phẩm chuỗi lạnh">Cold chain product variety</span><div class="score-live"><b id="sv-rf2">—</b>/5</div></div><div class="score-row" data-f="rf2" data-sec="5"></div><div class="score-ends"><span data-en="Very limited" data-th="น้อยมาก" data-vi="Rất hạn chế">Very limited</span><span data-en="Full range" data-th="ครบมาก" data-vi="Đầy đủ">Full range</span></div><span class="note-toggle" onclick="toggleNote(this)">+ <span data-en="Add note" data-th="เพิ่มหมายเหตุ" data-vi="Thêm ghi chú">Add note</span></span><div class="note-area"><textarea id="n-rf2" placeholder="Products in refrigerator / สินค้าในตู้เย็น / Sản phẩm trong tủ lạnh"></textarea></div></div>
+    <div class="field spec"><div class="fl"><span data-en="Refrigerator type" data-th="ประเภทตู้เย็น" data-vi="Loại tủ lạnh">Refrigerator type</span><span class="spec-tag">SPEC</span></div><select id="f-rfType"><option value="">--</option><option>Open chiller</option><option>Closed door</option><option>Island</option><option>Mixed</option></select></div>
+    <div class="field spec"><div class="fl"><span data-en="Number of units" data-th="จำนวนตู้" data-vi="Số lượng tủ">Number of units</span><span class="spec-tag">SPEC</span></div><input type="number" id="f-rfQty" placeholder="e.g. 4"></div>
+  </div>
+  <div class="sec-hdr" style="background:#4c1d95;border-radius:var(--r) var(--r) 0 0">
+    <h2 data-en="Business Analysis" data-th="วิเคราะห์เชิงธุรกิจ" data-vi="Phân tích kinh doanh">Business Analysis</h2>
+    <p data-en="Strengths, weaknesses, opportunity, solution" data-th="จุดแข็ง จุดอ่อน โอกาส โซลูชัน" data-vi="Điểm mạnh, điểm yếu, cơ hội, giải pháp">Strengths, weaknesses, opportunity, solution</p>
+  </div>
+  <div class="card">
+    <div class="field"><div class="fl"><span data-en="Key Strength" data-th="จุดแข็ง" data-vi="Điểm mạnh">Key Strength</span></div><textarea id="f-strength" placeholder="What does this store do well? / จุดแข็งที่เห็นชัด / Điểm mạnh của cửa hàng?"></textarea></div>
+    <div class="field"><div class="fl"><span data-en="Key Weakness" data-th="จุดอ่อน" data-vi="Điểm yếu">Key Weakness</span></div><textarea id="f-weakness" placeholder="Main gaps vs. best-in-class / จุดอ่อนเทียบมาตรฐาน / Khoảng cách so với tiêu chuẩn"></textarea></div>
+    <div class="field"><div class="fl"><span data-en="Growth Opportunity" data-th="โอกาสเติบโต" data-vi="Cơ hội tăng trưởng">Growth Opportunity</span></div><textarea id="f-opport" placeholder="Biggest untapped potential / โอกาสที่ยังไม่ถูกใช้ / Tiềm năng chưa được khai thác"></textarea></div>
+    <div class="field"><div class="fl"><span data-en="RBS Solution Recommended" data-th="โซลูชัน RBS ที่แนะนำ" data-vi="Giải pháp RBS được đề xuất">RBS Solution Recommended</span></div><textarea id="f-solution" placeholder="Smart Shelf / Planogram / Gondola / End-cap…"></textarea></div>
+    <div class="field"><div class="fl"><span data-en="Priority Level" data-th="ระดับความสำคัญ" data-vi="Mức độ ưu tiên">Priority Level</span></div>
+      <select id="f-priority">
+        <option value="">--</option>
+        <option data-en="High — Close within 1 month" data-th="สูง — ปิดภายใน 1 เดือน" data-vi="Cao — Chốt trong 1 tháng">High — Close within 1 month</option>
+        <option data-en="Medium — Follow up in 3 months" data-th="กลาง — ติดตามใน 3 เดือน" data-vi="Trung bình — Theo dõi trong 3 tháng">Medium — Follow up in 3 months</option>
+        <option data-en="Low — Keep warm" data-th="ต่ำ — ดูแลต่อเนื่อง" data-vi="Thấp — Duy trì quan hệ">Low — Keep warm</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+  PAGE 6: SUBMIT
+═══════════════════════════════════════ -->
+<div class="page" id="page6">
+  <div class="cfg-box">
+    <h4>⚙ Google Apps Script URL</h4>
+    <input type="text" id="gasUrl" value="https://script.google.com/macros/s/AKfycbygGyut32a7Cv58dOkaqLP3MGcaS9kREHvr2JOYbQqM6flnTpCqHaNBBJAt7U_oCN4/exec">
+    <p data-en="Paste your deployed GAS URL here before submitting. See README.md for setup instructions." data-th="วาง URL ของ Google Apps Script ที่ deploy แล้วก่อน submit — ดูวิธีตั้งค่าใน README.md" data-vi="Dán URL GAS đã deploy trước khi gửi — xem README.md để biết cách cài đặt">Paste your deployed GAS URL here before submitting. See README.md for setup instructions.</p>
+  </div>
+  <div class="sum-card">
+    <div style="font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:3px" data-en="Survey Summary" data-th="สรุปการสำรวจ" data-vi="Tóm tắt khảo sát">Survey Summary</div>
+    <div style="font-size:11px;color:var(--gray-400);margin-bottom:14px" id="sumMeta">—</div>
+    <div class="total-block">
+      <div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:2px" data-en="Total Weighted Score" data-th="คะแนนรวมถ่วงน้ำหนัก" data-vi="Tổng điểm có trọng số">Total Weighted Score</div>
+        <div class="total-num" id="totalScore">—</div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:4px" data-en="Rating" data-th="ระดับ" data-vi="Xếp loại">Rating</div>
+        <div id="totalRating" style="font-size:15px;font-weight:700;color:#fff">—</div>
+      </div>
+    </div>
+    <div style="font-size:11px;font-weight:600;color:var(--gray-500);margin-bottom:8px" data-en="Score by section:" data-th="คะแนนแต่ละ section:" data-vi="Điểm theo phần:">Score by section:</div>
+    <div class="sec-grid" id="secGrid"></div>
+    <div style="font-size:10px;color:var(--gray-400);margin-top:8px;padding:8px;background:var(--gray-50);border-radius:var(--r-sm)">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+        <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#dcfce7;border:1px solid #86efac;flex-shrink:0"></div><span data-en="4.5–5.0 Excellent" data-th="4.5–5.0 ดีเยี่ยม" data-vi="4.5–5.0 Xuất sắc">4.5–5.0 Excellent</span></div>
+        <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#dbeafe;border:1px solid #bfdbfe;flex-shrink:0"></div><span data-en="3.5–4.4 Good" data-th="3.5–4.4 ดี" data-vi="3.5–4.4 Tốt">3.5–4.4 Good</span></div>
+        <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#fef9c3;border:1px solid #fcd34d;flex-shrink:0"></div><span data-en="2.5–3.4 Fair" data-th="2.5–3.4 พอใช้" data-vi="2.5–3.4 Khá">2.5–3.4 Fair</span></div>
+        <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#fee2e2;border:1px solid #fca5a5;flex-shrink:0"></div><span data-en="1.0–2.4 Poor" data-th="1.0–2.4 แย่" data-vi="1.0–2.4 Kém">1.0–2.4 Poor</span></div>
+      </div>
+    </div>
+  </div>
+  <div id="statusBox"></div>
+  <div style="display:flex;gap:8px;margin-bottom:10px">
+    <button class="btn btn-s" style="flex:1" onclick="exportJSON()">Export JSON</button>
+    <button class="btn btn-g" style="flex:2" onclick="submitForm()" id="submitBtn">
+      <span data-en="Submit to Google Sheet →" data-th="ส่งข้อมูลเข้า Google Sheet →" data-vi="Gửi vào Google Sheet →">Submit to Google Sheet →</span>
+    </button>
+  </div>
+  <p style="font-size:10px;color:var(--gray-400);text-align:center;margin-bottom:4px" data-en="Review all information before submitting" data-th="ตรวจสอบข้อมูลให้ครบก่อน submit" data-vi="Kiểm tra tất cả thông tin trước khi gửi">Review all information before submitting</p>
+</div>
+
+</div><!-- /content -->
+
+<!-- NAV BAR -->
+<div class="nav">
+  <button class="btn btn-s" id="btnBack" style="display:none;flex:1" onclick="navigate(-1)">← <span data-en="Back" data-th="ย้อนกลับ" data-vi="Quay lại">Back</span></button>
+  <button class="btn btn-p" id="btnNext" style="flex:2" onclick="navigate(1)"><span data-en="Next →" data-th="ถัดไป →" data-vi="Tiếp theo →">Next →</span></button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════
+const SECTIONS = [
+  { id:1, fields:['cat1','cat2','cat3','cat4','cat5','cat6'], w:25, avgEl:'avg1', rpEl:'rp1', label:'Category & Planogram' },
+  { id:2, fields:['sh1','sh2','sh3','sh4','sh5'],            w:15, avgEl:'avg2', rpEl:'rp2', label:'Shelf Quality' },
+  { id:3, fields:['dp1','dp2','dp3','dp4','vm1','vm2','vm3','vm4','vm5'], w:30, avgEl:'avg3', rpEl:'rp3', label:'Display & Visual' },
+  { id:4, fields:['en1','en2','en3','en4','fl1','fl2','fl3','fl4'],       w:23, avgEl:'avg4', rpEl:'rp4', label:'Entrance & Flow' },
+  { id:5, fields:['co1','co2','co3','rf1','rf2'],             w:7,  avgEl:'avg5', rpEl:'rp5', label:'Checkout & Refrig.' },
+];
+
+const scores = {};
+let curPage = 0;
+const TOTAL = 7;
+let curLang = 'en';
+
+// ════════════════════════════════════════
+// LANGUAGE
+// ════════════════════════════════════════
+function setLang(l, btn) {
+  curLang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  // update all data-[lang] elements
+  document.querySelectorAll(`[data-${l}]`).forEach(el => {
+    const val = el.getAttribute(`data-${l}`);
+    if (!val) return;
+    if (el.tagName === 'OPTION') el.textContent = val;
+    else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = val;
+    else el.textContent = val;
+  });
+  // step pills
+  document.querySelectorAll('.sp[data-'+l+']').forEach(el => { el.textContent = el.getAttribute('data-'+l); });
+}
+
+// ════════════════════════════════════════
+// BUILD SCORE BUTTONS
+// ════════════════════════════════════════
+function buildScoreRows() {
+  document.querySelectorAll('.score-row[data-f]').forEach(row => {
+    const f = row.dataset.f;
+    const sec = row.dataset.sec;
+    for (let i = 1; i <= 5; i++) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'sb'; b.textContent = i;
+      b.onclick = () => pick(f, i, sec, row);
+      row.appendChild(b);
+    }
+  });
+}
+
+function pick(field, val, sec, row) {
+  scores[field] = val;
+  row.querySelectorAll('.sb').forEach((b, i) => {
+    b.className = 'sb' + ((i + 1) === val ? ' v' + val : '');
+  });
+  const sv = document.getElementById('sv-' + field);
+  if (sv) sv.textContent = val;
+  updateSectionAvgs();
+  updateTotal();
+}
+
+// ════════════════════════════════════════
+// SECTION AVG + RATING
+// ════════════════════════════════════════
+const ratingOf = n => {
+  const v = parseFloat(n);
+  if (isNaN(v)) return { text: '—', bg: '#f1f5f9', col: '#64748b' };
+  if (v >= 4.5) return { text: 'Excellent', bg: '#dcfce7', col: '#15803d' };
+  if (v >= 3.5) return { text: 'Good',      bg: '#dbeafe', col: '#1d4ed8' };
+  if (v >= 2.5) return { text: 'Fair',      bg: '#fef9c3', col: '#a16207' };
+  return           { text: 'Poor',      bg: '#fee2e2', col: '#b91c1c' };
+};
+
+function updateSectionAvgs() {
+  SECTIONS.forEach(s => {
+    const vals = s.fields.map(f => scores[f]).filter(v => v !== undefined);
+    if (!vals.length) return;
+    const avg = (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1);
+    const el = document.getElementById(s.avgEl);
+    if (el) el.textContent = avg;
+    const r = ratingOf(avg);
+    const rp = document.getElementById(s.rpEl);
+    if (rp) { rp.textContent = r.text; rp.style.background = r.bg; rp.style.color = r.col; }
+  });
+}
+
+function updateTotal() {
+  let total = 0; let hasAny = false;
+  const grid = document.getElementById('secGrid');
+  if (grid) grid.innerHTML = '';
+  SECTIONS.forEach(s => {
+    const vals = s.fields.map(f => scores[f]).filter(v => v !== undefined);
+    if (!vals.length) return;
+    hasAny = true;
+    const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+    total += avg * s.w / 100;
+    if (grid) {
+      const chip = document.createElement('div');
+      chip.className = 'sec-chip';
+      const r = ratingOf(avg.toFixed(1));
+      chip.style.background = r.bg;
+      chip.innerHTML = `<div class="v" style="color:${r.col}">${avg.toFixed(1)}</div><div class="l">${s.label}</div>`;
+      grid.appendChild(chip);
+    }
+  });
+  const ts = document.getElementById('totalScore');
+  const tr = document.getElementById('totalRating');
+  const sm = document.getElementById('sumMeta');
+  if (ts && hasAny) {
+    const t = total.toFixed(1);
+    ts.textContent = t;
+    const r = ratingOf(t);
+    if (tr) { tr.textContent = r.text; tr.style.color = r.bg; }
+  }
+  const sn = document.getElementById('f-storeName');
+  const sv = document.getElementById('f-surveyor');
+  const sd = document.getElementById('f-date');
+  if (sm) sm.textContent = [sn?.value, sv?.value, sd?.value].filter(Boolean).join(' · ') || '—';
+}
+
+// ════════════════════════════════════════
+// NOTE TOGGLE
+// ════════════════════════════════════════
+function toggleNote(el) {
+  const area = el.nextElementSibling;
+  area.classList.toggle('open');
+}
+
+// ════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════
+function goTo(idx) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.sp').forEach(p => p.classList.remove('on'));
+  document.getElementById('page' + idx).classList.on = true;
+  document.getElementById('page' + idx).classList.add('on');
+  document.getElementById('pill' + idx).classList.add('on');
+  curPage = idx;
+  document.getElementById('btnBack').style.display = idx === 0 ? 'none' : '';
+  const pct = Math.round(((idx + 1) / TOTAL) * 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progStep').textContent = `Step ${idx + 1} / ${TOTAL}`;
+  document.getElementById('progPct').textContent = pct + '%';
+  if (idx === TOTAL - 1) updateTotal();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // scroll pill into view
+  const pill = document.getElementById('pill' + idx);
+  pill?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+}
+
+function navigate(dir) {
+  const next = curPage + dir;
+  if (next < 0 || next >= TOTAL) return;
+  document.getElementById('pill' + curPage).classList.add('done');
+  goTo(next);
+}
+
+// ════════════════════════════════════════
+// DATA COLLECTION
+// ════════════════════════════════════════
+function g(id) { return document.getElementById(id)?.value || ''; }
+
+function collectData() {
+  // Compute section avgs + total
+  const secAvgs = {};
+  let total = 0;
+  SECTIONS.forEach(s => {
+    const vals = s.fields.map(f => scores[f]).filter(v => v !== undefined);
+    const avg = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length) : null;
+    secAvgs['sec' + s.id + '_avg'] = avg !== null ? avg.toFixed(2) : '';
+    secAvgs['sec' + s.id + '_weighted'] = avg !== null ? (avg * s.w / 100).toFixed(2) : '';
+    if (avg !== null) total += avg * s.w / 100;
+  });
+
+  return {
+    timestamp: new Date().toISOString(),
+    storeName: g('f-storeName'), chain: g('f-chain'), industry: g('f-industry'),
+    locationType: g('f-locType'), storeSize: g('f-size'), brandPos: g('f-brandPos'),
+    footTraffic: g('f-traffic'), firstImpression: scores['impression'] || '',
+    surveyor: g('f-surveyor'), surveyDate: g('f-date'), contactPerson: g('f-contact'),
+    budget: g('f-budget'), decisionTimeline: g('f-timeline'), painNote: g('f-pain'),
+    // scores
+    ...Object.fromEntries(Object.entries(scores).map(([k, v]) => ['score_' + k, v])),
+    // notes
+    note_cat1: g('n-cat1'), note_cat2: g('n-cat2'),
+    note_dp1: g('n-dp1'), note_vm5: g('n-vm5'), note_fl1: g('n-fl1'), note_rf2: g('n-rf2'),
+    // shelf spec
+    shMaterial: g('f-shMat'), shWall: g('f-shWall'), shGondola: g('f-shGond'),
+    shPitch: g('f-shPitch'), shHoleType: g('f-shHole'), shColour: g('f-shCol'),
+    shNotes: g('f-shNotes'),
+    // checkout + refrig spec
+    coMaterial: g('f-coMat'), rfType: g('f-rfType'), rfQty: g('f-rfQty'),
+    // analysis
+    strength: g('f-strength'), weakness: g('f-weakness'),
+    opportunity: g('f-opport'), solution: g('f-solution'), priority: g('f-priority'),
+    // computed
+    ...secAvgs,
+    totalWeightedScore: total.toFixed(2),
+    overallRating: ratingOf(total.toFixed(1)).text,
+    surveyLanguage: curLang,
+  };
+}
+
+// ════════════════════════════════════════
+// SUBMIT
+// ════════════════════════════════════════
+async function submitForm() {
+  const url = g('gasUrl');
+  if (!url || !url.startsWith('https://script.google.com')) {
+    showToast('Please enter a valid Google Apps Script URL');
+    return;
+  }
+  if (!g('f-storeName')) { showToast('Store Name is required'); goTo(0); return; }
+  if (!g('f-surveyor'))  { showToast('Surveyor Name is required'); goTo(0); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  showStatus('loading', 'Sending…', 'กำลังส่งข้อมูล / Đang gửi dữ liệu…');
+
+  try {
+    const data    = collectData();
+    const encoded = encodeURIComponent(JSON.stringify(data));
+    const fullUrl = url + '?data=' + encoded;
+
+    // ใช้ fetch GET — ทำงานได้ทั้งจาก local file และ hosted
+    const res = await fetch(fullUrl, { method: 'GET' });
+    const json = await res.json();
+
+    if (json.status === 'ok') {
+      showStatus('ok', 'Submitted successfully!', 'ส่งข้อมูลสำเร็จ — ตรวจสอบใน Google Sheet / Đã gửi thành công — kiểm tra Google Sheet');
+      localStorage.removeItem('rbs_draft');
+    } else {
+      throw new Error(json.message || 'Unknown error');
+    }
+  } catch (e) {
+    // Fallback: ถ้า CORS block ให้ใช้ image trick (ส่งได้แต่ไม่รู้ผล)
+    try {
+      const data    = collectData();
+      const encoded = encodeURIComponent(JSON.stringify(data));
+      const fullUrl = url + '?data=' + encoded;
+      new Image().src = fullUrl;
+      // รอ 2 วินาทีแล้วแสดงผล
+      await new Promise(r => setTimeout(r, 2000));
+      showStatus('ok', 'Submitted! (Please verify in Google Sheet)', 'ส่งข้อมูลแล้ว — กรุณาตรวจสอบใน Google Sheet ว่าข้อมูลเข้าหรือไม่');
+      localStorage.removeItem('rbs_draft');
+    } catch(e2) {
+      showStatus('err', 'Error sending data', e2.message);
+      btn.disabled = false;
+    }
+  }
+}
+
+function showStatus(type, title, msg) {
+  const box = document.getElementById('statusBox');
+  const cls = { ok: 'status-ok', err: 'status-err', loading: 'status-loading' }[type];
+  const col = { ok: 'var(--green)', err: 'var(--red)', loading: 'var(--blue)' }[type];
+  box.className = cls;
+  box.innerHTML = `<h3 style="color:${col}">${title}</h3><p>${msg}</p>`;
+}
+
+function exportJSON() {
+  const d = collectData();
+  const blob = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `RBS_${d.storeName || 'draft'}_${d.surveyDate || 'nodate'}.json`;
+  a.click();
+  showToast('JSON exported!');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ════════════════════════════════════════
+// AUTO-SAVE
+// ════════════════════════════════════════
+function saveLocal() {
+  try { localStorage.setItem('rbs_draft', JSON.stringify({ scores, gasUrl: g('gasUrl') })); } catch(e) {}
+}
+
+function restoreLocal() {
+  try {
+    const d = JSON.parse(localStorage.getItem('rbs_draft') || '{}');
+    if (d.scores) {
+      Object.entries(d.scores).forEach(([f, v]) => {
+        const row = document.querySelector(`.score-row[data-f="${f}"]`);
+        if (row) pick(f, v, null, row);
+      });
+    }
+    if (d.gasUrl) { const el = document.getElementById('gasUrl'); if (el) el.value = d.gasUrl; }
+  } catch(e) {}
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+buildScoreRows();
+document.getElementById('f-date').valueAsDate = new Date();
+restoreLocal();
+setInterval(saveLocal, 5000);
+goTo(0);
+</script>
+</body>
+</html>
