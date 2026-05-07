@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RBS Vietnam — CEO Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f1f5f9;--bg2:#ffffff;--bg3:#f8fafc;
+  --border:#e2e8f0;--border2:rgba(0,0,0,.06);
+  --blue:#2563eb;--blue2:#1d4ed8;--blue-l:#eff6ff;--blue-b:#bfdbfe;
+  --green:#16a34a;--green-l:#f0fdf4;--green-b:#86efac;
+  --amber:#d97706;--amber-l:#fffbeb;--amber-b:#fcd34d;
+  --red:#dc2626;--red-l:#fef2f2;--red-b:#fca5a5;
+  --purple:#7c3aed;--purple-l:#f5f3ff;
+  --text:#0f172a;--muted:#64748b;--muted2:#475569;
+  --navy:#1e3a5f;--navy2:#1e40af;
+  --font:'DM Sans',sans-serif;--head:'Syne',sans-serif;--mono:'DM Mono',monospace;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:0 4px 12px rgba(0,0,0,.1),0 2px 4px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+.wrap{max-width:1280px;margin:0 auto;padding:0 24px 60px}
+
+/* HEADER */
+header{padding:28px 0 22px;display:flex;align-items:flex-start;justify-content:space-between;border-bottom:1px solid var(--border);margin-bottom:28px;gap:16px;flex-wrap:wrap}
+.eyebrow{font-family:var(--mono);font-size:11px;color:var(--blue);letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px}
+.hdr-title{font-family:var(--head);font-size:28px;font-weight:800;line-height:1;letter-spacing:-.5px;color:var(--text)}
+.hdr-sub{font-size:13px;color:var(--muted);margin-top:5px}
+.hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.lang-wrap{display:flex;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:2px;gap:1px}
+.lang-btn{padding:5px 12px;border-radius:16px;font-size:11px;font-weight:600;color:var(--muted);border:none;background:transparent;cursor:pointer;font-family:var(--font);transition:all .2s}
+.lang-btn.on{background:var(--blue);color:#fff}
+.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:5px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* FILTER BAR */
+.filter-bar{display:none;align-items:center;gap:8px;background:var(--blue-l);border:1px solid var(--blue-b);border-radius:10px;padding:10px 14px;margin-bottom:20px;flex-wrap:wrap}
+.filter-bar.show{display:flex}
+.filter-label{font-size:12px;color:var(--blue2);font-weight:600}
+.filter-tag{font-size:11px;padding:3px 10px;border-radius:20px;background:var(--blue);color:#fff;font-weight:600}
+.filter-clear{font-size:11px;padding:4px 12px;border-radius:20px;background:#fff;color:var(--muted);cursor:pointer;border:1px solid var(--border);font-family:var(--font);transition:all .15s;margin-left:auto}
+.filter-clear:hover{background:var(--bg3);color:var(--text)}
+
+/* CFG */
+.cfg-bar{background:var(--amber-l);border:1px solid var(--amber-b);border-radius:12px;padding:14px 18px;margin-bottom:24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cfg-bar label{font-size:11px;color:var(--amber);font-family:var(--mono);white-space:nowrap;font-weight:600}
+.cfg-bar input{flex:1;min-width:280px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;box-shadow:var(--shadow)}
+.cfg-bar input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.btn{padding:8px 16px;border:none;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s}
+.btn-p{background:var(--blue);color:#fff;box-shadow:var(--shadow)}.btn-p:hover{background:var(--blue2)}
+.btn-s{background:#fff;color:var(--muted);border:1px solid var(--border);box-shadow:var(--shadow)}.btn-s:hover{background:var(--bg3)}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:#fff;border:1px solid var(--border);border-radius:14px;padding:18px 20px;position:relative;overflow:hidden;transition:all .2s;cursor:pointer;box-shadow:var(--shadow)}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:#cbd5e1}
+.kpi.active{border-color:var(--blue);box-shadow:0 0 0 2px rgba(37,99,235,.15),var(--shadow-md)}
+.kpi.dimmed{opacity:.4}
+.kpi-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-family:var(--mono);margin-bottom:8px}
+.kpi-val{font-family:var(--head);font-size:34px;font-weight:800;line-height:1;margin-bottom:5px}
+.kpi-sub{font-size:11px;color:var(--muted)}
+.kpi-icon{position:absolute;right:16px;top:16px;font-size:20px;opacity:.3}
+.kpi-hint{font-size:9px;color:var(--blue);margin-top:5px;font-family:var(--mono);opacity:0;transition:opacity .2s}
+.kpi:hover .kpi-hint{opacity:1}
+
+/* CHARTS */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+@media(max-width:700px){.chart-grid{grid-template-columns:1fr}}
+.chart-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+.chart-card h3{font-family:var(--head);font-size:12px;font-weight:600;color:var(--muted);margin-bottom:16px;text-transform:uppercase;letter-spacing:.08em}
+.bar-list{display:flex;flex-direction:column;gap:8px}
+.bar-item{display:flex;align-items:center;gap:10px;cursor:pointer;padding:5px 7px;border-radius:7px;transition:all .15s;border:1px solid transparent}
+.bar-item:hover{background:var(--bg3)}
+.bar-item.active{background:var(--blue-l);border-color:var(--blue-b)}
+.bar-item.dimmed{opacity:.3}
+.bar-name{font-size:11px;color:var(--muted2);width:140px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.bar-fill{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.bar-score{font-family:var(--mono);font-size:11px;font-weight:600;width:28px;text-align:right;flex-shrink:0}
+.weight-list{display:flex;flex-direction:column;gap:8px}
+.weight-row{display:flex;align-items:center;gap:10px}
+.weight-name{font-size:11px;color:var(--muted2);width:160px;flex-shrink:0}
+.weight-track{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;border:1px solid var(--border)}
+.weight-fill{height:100%;border-radius:3px}
+.weight-pct{font-family:var(--mono);font-size:10px;color:var(--muted);width:32px;text-align:right}
+.rating-row{display:flex;gap:8px}
+.rating-box{flex:1;border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;transition:all .2s;border:1.5px solid transparent}
+.rating-box:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.rating-box.active{border-color:currentColor;transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.rating-box.dimmed{opacity:.3}
+.rating-box .rv{font-family:var(--head);font-size:22px;font-weight:800}
+.rating-box .rl{font-size:9px;margin-top:2px;text-transform:uppercase;letter-spacing:.05em;opacity:.8}
+
+/* SECTION TITLE */
+.sec-title{font-family:var(--head);font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* PIPELINE */
+.pipeline-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:900px){.pipeline-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.pipeline-grid{grid-template-columns:1fr}}
+.pipe-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:14px;transition:all .2s;cursor:pointer;box-shadow:var(--shadow)}
+.pipe-card:hover{border-color:#93c5fd;transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.pipe-card.active{border-color:var(--blue);box-shadow:0 0 0 2px rgba(37,99,235,.15)}
+.pipe-card.dimmed{opacity:.25}
+.pipe-store{font-family:var(--head);font-size:13px;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.pipe-chain{font-size:11px;color:var(--muted);margin-bottom:10px}
+.pipe-score{font-family:var(--mono);font-size:26px;font-weight:600;line-height:1;margin-bottom:3px}
+.pipe-rating{font-size:10px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.pipe-solution{font-size:11px;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;line-height:1.4}
+
+/* TABLE */
+.table-wrap{background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:24px;box-shadow:var(--shadow)}
+.table-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--bg3)}
+.table-hdr h3{font-family:var(--head);font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{padding:9px 14px;font-size:10px;font-weight:600;color:var(--muted);text-align:left;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--border);background:var(--bg3);font-family:var(--mono)}
+.tbl td{padding:11px 14px;font-size:12px;border-bottom:1px solid #f1f5f9;vertical-align:middle;transition:background .1s;color:var(--text)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr.row-active td{background:var(--blue-l)!important;border-left:2px solid var(--blue)}
+.tbl tr.row-dimmed td{opacity:.25}
+.tbl tr:hover:not(.row-dimmed) td{background:var(--bg3);cursor:pointer}
+.score-badge{display:inline-flex;align-items:center;justify-content:center;width:44px;height:24px;border-radius:6px;font-family:var(--mono);font-size:11px;font-weight:700}
+.priority-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
+.chain-tag{font-size:10px;color:var(--muted);background:var(--bg3);padding:2px 7px;border-radius:5px;border:1px solid var(--border)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty-icon{font-size:32px;margin-bottom:8px;opacity:.5}
+.empty h3{font-size:14px;font-weight:600;margin-bottom:4px;color:var(--muted2)}
+.empty p{font-size:12px}
+footer{text-align:center;padding:20px;font-size:10px;color:var(--muted);font-family:var(--mono);border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">RBS Retail Business Solution</div>
+      <div class="hdr-title" id="hdr-title">Vietnam Market Dashboard</div>
+      <div class="hdr-sub" id="hdr-sub">Store Survey Summary · Live from Google Sheets</div>
+    </div>
+    <div class="hdr-right">
+      <div class="lang-wrap">
+        <button class="lang-btn on" onclick="setLang('en',this)">EN</button>
+        <button class="lang-btn" onclick="setLang('th',this)">TH</button>
+        <button class="lang-btn" onclick="setLang('vi',this)">VI</button>
+      </div>
+      <div style="font-size:11px;color:var(--muted);font-family:var(--mono)"><span class="live-dot"></span><span id="live-label">Live from Google Sheet</span></div>
+      <div style="font-size:10px;color:var(--muted);font-family:var(--mono)" id="lastRefresh">—</div>
+    </div>
+  </header>
+
+  <div class="filter-bar" id="filterBar">
+    <span class="filter-label" id="filter-active-lbl">Active filter:</span>
+    <span class="filter-tag" id="filterTag">—</span>
+    <button class="filter-clear" onclick="clearFilter()" id="btn-clear-filter">✕ Show all</button>
+  </div>
+
+  <div class="cfg-bar">
+    <label id="cfg-label">⚙ GAS URL:</label>
+    <input type="text" id="gasUrl" placeholder="https://script.google.com/macros/s/YOUR_ID/exec" value="https://script.google.com/macros/s/AKfycbygGyut32a7Cv58dOkaqLP3MGcaS9kREHvr2JOYbQqM6flnTpCqHaNBBJAt7U_oCN4/exec">
+    <button class="btn btn-p" onclick="loadData()" id="btn-load">🔄 Load Data</button>
+    <button class="btn btn-s" onclick="loadDemoData()" id="btn-demo">👁 Demo Mode</button>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi" id="kpi-total" onclick="filterBy('all')">
+      <div class="kpi-label" id="kpi1-lbl">Total Stores Surveyed</div>
+      <div class="kpi-val" style="color:var(--blue)" id="kpiTotal">—</div>
+      <div class="kpi-sub" id="kpi1-sub">Vietnam market</div>
+      <div class="kpi-hint" id="kpi1-hint">Click to show all</div>
+      <div class="kpi-icon">🏪</div>
+    </div>
+    <div class="kpi" id="kpi-avg" onclick="filterBy('avg')">
+      <div class="kpi-label" id="kpi2-lbl">Average Score</div>
+      <div class="kpi-val" style="color:var(--green)" id="kpiAvg">—</div>
+      <div class="kpi-sub" id="kpi2-sub">Weighted / 5.0</div>
+      <div class="kpi-hint" id="kpi2-hint">Click: above-avg stores</div>
+      <div class="kpi-icon">📊</div>
+    </div>
+    <div class="kpi" id="kpi-high" onclick="filterBy('high')">
+      <div class="kpi-label" id="kpi3-lbl">High Priority</div>
+      <div class="kpi-val" style="color:var(--red)" id="kpiHigh">—</div>
+      <div class="kpi-sub" id="kpi3-sub">Close within 1 month</div>
+      <div class="kpi-hint" id="kpi3-hint">Click to filter</div>
+      <div class="kpi-icon">🔥</div>
+    </div>
+    <div class="kpi" id="kpi-exc" onclick="filterBy('excellent')">
+      <div class="kpi-label" id="kpi4-lbl">Excellent Stores</div>
+      <div class="kpi-val" style="color:var(--amber)" id="kpiExc">—</div>
+      <div class="kpi-sub" id="kpi4-sub">Score ≥ 4.5</div>
+      <div class="kpi-hint" id="kpi4-hint">Click to filter</div>
+      <div class="kpi-icon">⭐</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3 id="chart1-title">Store Scores — Ranked</h3>
+      <div class="bar-list" id="storeBarChart"><div class="empty"><div class="empty-icon">📈</div><p id="chart-empty">Load data to see scores</p></div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="chart-card" style="flex:1">
+        <h3 id="chart2-title">Score Weight by Section</h3>
+        <div class="weight-list">
+          <div class="weight-row"><span class="weight-name" id="w1">Category & Planogram</span><div class="weight-track"><div class="weight-fill" style="width:25%;background:#3b82f6"></div></div><span class="weight-pct">25%</span></div>
+          <div class="weight-row"><span class="weight-name" id="w2">Display + Visual Merch</span><div class="weight-track"><div class="weight-fill" style="width:30%;background:#8b5cf6"></div></div><span class="weight-pct">30%</span></div>
+          <div class="weight-row"><span class="weight-name" id="w3">Entrance + Flow</span><div class="weight-track"><div class="weight-fill" style="width:23%;background:#16a34a"></div></div><span class="weight-pct">23%</span></div>
+          <div class="weight-row"><span class="weight-name" id="w4">Shelf Quality</span><div class="weight-track"><div class="weight-fill" style="width:15%;background:#d97706"></div></div><span class="weight-pct">15%</span></div>
+          <div class="weight-row"><span class="weight-name" id="w5">Checkout + Refrig.</span><div class="weight-track"><div class="weight-fill" style="width:7%;background:#dc2626"></div></div><span class="weight-pct">7%</span></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3 id="chart3-title">Rating Distribution</h3>
+        <div class="rating-row">
+          <div class="rating-box" id="rb-exc" style="background:#f0fdf4" onclick="filterBy('rating','Excellent')"><div class="rv" style="color:#16a34a" id="r-exc">—</div><div class="rl" style="color:#16a34a" id="rl-exc">Excellent</div></div>
+          <div class="rating-box" id="rb-good" style="background:#eff6ff" onclick="filterBy('rating','Good')"><div class="rv" style="color:#2563eb" id="r-good">—</div><div class="rl" style="color:#2563eb" id="rl-good">Good</div></div>
+          <div class="rating-box" id="rb-fair" style="background:#fffbeb" onclick="filterBy('rating','Fair')"><div class="rv" style="color:#d97706" id="r-fair">—</div><div class="rl" style="color:#d97706" id="rl-fair">Fair</div></div>
+          <div class="rating-box" id="rb-poor" style="background:#fef2f2" onclick="filterBy('rating','Poor')"><div class="rv" style="color:#dc2626" id="r-poor">—</div><div class="rl" style="color:#dc2626" id="rl-poor">Poor</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-title" id="pipe-title">Sales Pipeline — Priority Stores</div>
+  <div class="pipeline-grid" id="pipelineGrid">
+    <div class="empty" style="grid-column:1/-1"><div class="empty-icon">🎯</div><h3 id="pipe-empty-h">No pipeline data yet</h3><p id="pipe-empty-p">Load data or try Demo Mode</p></div>
+  </div>
+
+  <div class="sec-title" id="table-title">All Stores Survey Results</div>
+  <div class="table-wrap">
+    <div class="table-hdr">
+      <h3 id="table-hdr-h">Survey Results</h3>
+      <span style="font-size:11px;color:var(--muted);font-family:var(--mono)" id="tableCount">—</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="tbl">
+        <thead><tr>
+          <th id="th-store">Store</th><th id="th-chain">Chain</th><th id="th-ind">Industry</th>
+          <th id="th-date">Date</th><th id="th-cat">Category</th><th id="th-shelf">Shelf</th>
+          <th id="th-vis">Visual</th><th id="th-flow">Flow</th><th id="th-total">Total</th>
+          <th id="th-rating">Rating</th><th id="th-pri">Priority</th>
+        </tr></thead>
+        <tbody id="tableBody"><tr><td colspan="11"><div class="empty"><div class="empty-icon">📋</div><h3 id="tbl-empty-h">No data loaded</h3><p id="tbl-empty-p">Click Load Data or Demo Mode</p></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<footer id="footer-txt">RBS Vietnam CEO Dashboard · Powered by Google Sheets · RBS Survey System v3</footer>
+
+<script>
+const T={en:{'hdr-title':'Vietnam Market Dashboard','hdr-sub':'Store Survey Summary · Live from Google Sheets','live-label':'Live from Google Sheet','cfg-label':'⚙ GAS URL:','btn-load':'🔄 Load Data','btn-demo':'👁 Demo Mode','filter-active-lbl':'Active filter:','btn-clear-filter':'✕ Show all','kpi1-lbl':'Total Stores Surveyed','kpi1-sub':'Vietnam market','kpi1-hint':'Click to show all','kpi2-lbl':'Average Score','kpi2-sub':'Weighted / 5.0','kpi2-hint':'Click: above-avg stores','kpi3-lbl':'High Priority','kpi3-sub':'Close within 1 month','kpi3-hint':'Click to filter','kpi4-lbl':'Excellent Stores','kpi4-sub':'Score ≥ 4.5','kpi4-hint':'Click to filter','chart1-title':'Store Scores — Ranked','chart2-title':'Score Weight by Section','chart3-title':'Rating Distribution','chart-empty':'Load data to see scores','w1':'Category & Planogram','w2':'Display + Visual Merch','w3':'Entrance + Flow','w4':'Shelf Quality','w5':'Checkout + Refrig.','rl-exc':'Excellent','rl-good':'Good','rl-fair':'Fair','rl-poor':'Poor','pipe-title':'Sales Pipeline — Priority Stores','pipe-empty-h':'No pipeline data','pipe-empty-p':'Load data or Demo Mode','table-title':'All Stores Survey Results','table-hdr-h':'Survey Results','th-store':'Store','th-chain':'Chain','th-ind':'Industry','th-date':'Date','th-cat':'Category','th-shelf':'Shelf','th-vis':'Visual','th-flow':'Flow','th-total':'Total','th-rating':'Rating','th-pri':'Priority','tbl-empty-h':'No data loaded','tbl-empty-p':'Click Load Data or Demo Mode','footer-txt':'RBS Vietnam CEO Dashboard · Powered by Google Sheets · v3'},
+th:{'hdr-title':'แดชบอร์ดตลาดเวียดนาม','hdr-sub':'สรุปผลการสำรวจร้านค้า · เชื่อมต่อ Google Sheets','live-label':'ข้อมูล real-time','cfg-label':'⚙ GAS URL:','btn-load':'🔄 โหลดข้อมูล','btn-demo':'👁 โหมดตัวอย่าง','filter-active-lbl':'กำลังกรอง:','btn-clear-filter':'✕ ดูทั้งหมด','kpi1-lbl':'ร้านที่สำรวจทั้งหมด','kpi1-sub':'ตลาดเวียดนาม','kpi1-hint':'คลิกดูทั้งหมด','kpi2-lbl':'คะแนนเฉลี่ย','kpi2-sub':'ถ่วงน้ำหนัก / 5.0','kpi2-hint':'คลิก: ร้านสูงกว่าค่าเฉลี่ย','kpi3-lbl':'ความสำคัญสูง','kpi3-sub':'ปิดดีลภายใน 1 เดือน','kpi3-hint':'คลิกเพื่อกรอง','kpi4-lbl':'ร้านระดับ Excellent','kpi4-sub':'คะแนน ≥ 4.5','kpi4-hint':'คลิกเพื่อกรอง','chart1-title':'คะแนนร้านค้า — จัดอันดับ','chart2-title':'น้ำหนักคะแนนแต่ละส่วน','chart3-title':'การกระจาย Rating','chart-empty':'โหลดข้อมูลเพื่อดูคะแนน','w1':'หมวดสินค้าและ Planogram','w2':'ดิสเพลย์และการจัดสินค้า','w3':'ทางเข้าและ Flow','w4':'คุณภาพชั้นวาง','w5':'เคาน์เตอร์และตู้เย็น','rl-exc':'ดีเยี่ยม','rl-good':'ดี','rl-fair':'พอใช้','rl-poor':'แย่','pipe-title':'Pipeline การขาย','pipe-empty-h':'ยังไม่มีข้อมูล','pipe-empty-p':'โหลดข้อมูลหรือโหมดตัวอย่าง','table-title':'ผลการสำรวจทุกร้านค้า','table-hdr-h':'ผลการสำรวจ','th-store':'ร้านค้า','th-chain':'เชน','th-ind':'ประเภท','th-date':'วันที่','th-cat':'หมวดสินค้า','th-shelf':'ชั้นวาง','th-vis':'ดิสเพลย์','th-flow':'ทางเข้า','th-total':'คะแนนรวม','th-rating':'ระดับ','th-pri':'ความสำคัญ','tbl-empty-h':'ยังไม่มีข้อมูล','tbl-empty-p':'กดโหลดหรือโหมดตัวอย่าง','footer-txt':'RBS Vietnam CEO Dashboard · ขับเคลื่อนด้วย Google Sheets · v3'},
+vi:{'hdr-title':'Dashboard Thị Trường Việt Nam','hdr-sub':'Tóm tắt khảo sát · Kết nối Google Sheets','live-label':'Dữ liệu trực tiếp','cfg-label':'⚙ GAS URL:','btn-load':'🔄 Tải dữ liệu','btn-demo':'👁 Chế độ Demo','filter-active-lbl':'Đang lọc:','btn-clear-filter':'✕ Xem tất cả','kpi1-lbl':'Tổng cửa hàng khảo sát','kpi1-sub':'Thị trường Việt Nam','kpi1-hint':'Nhấn để xem tất cả','kpi2-lbl':'Điểm trung bình','kpi2-sub':'Có trọng số / 5.0','kpi2-hint':'Nhấn: cửa hàng trên TB','kpi3-lbl':'Ưu tiên cao','kpi3-sub':'Chốt trong 1 tháng','kpi3-hint':'Nhấn để lọc','kpi4-lbl':'Cửa hàng Excellent','kpi4-sub':'Điểm ≥ 4.5','kpi4-hint':'Nhấn để lọc','chart1-title':'Điểm cửa hàng — Xếp hạng','chart2-title':'Trọng số theo phần','chart3-title':'Phân bổ xếp loại','chart-empty':'Tải dữ liệu để xem','w1':'Danh mục & Planogram','w2':'Trưng bày + Visual','w3':'Lối vào + Flow','w4':'Chất lượng kệ','w5':'Thanh toán + Tủ lạnh','rl-exc':'Xuất sắc','rl-good':'Tốt','rl-fair':'Khá','rl-poor':'Kém','pipe-title':'Pipeline Bán Hàng','pipe-empty-h':'Chưa có dữ liệu','pipe-empty-p':'Tải dữ liệu hoặc Demo','table-title':'Kết Quả Tất Cả Cửa Hàng','table-hdr-h':'Kết quả khảo sát','th-store':'Cửa hàng','th-chain':'Chuỗi','th-ind':'Ngành','th-date':'Ngày','th-cat':'Danh mục','th-shelf':'Kệ','th-vis':'Trưng bày','th-flow':'Lối vào','th-total':'Tổng điểm','th-rating':'Xếp loại','th-pri':'Ưu tiên','tbl-empty-h':'Chưa có dữ liệu','tbl-empty-p':'Nhấn Tải hoặc Demo','footer-txt':'RBS Vietnam CEO Dashboard · Google Sheets · v3'}};
+
+let curLang='en';
+function setLang(l,btn){curLang=l;document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');const t=T[l];Object.keys(t).forEach(k=>{const el=document.getElementById(k);if(el)el.textContent=t[k];});}
+
+const sc=v=>{const n=parseFloat(v);if(n>=4.5)return'#16a34a';if(n>=3.5)return'#2563eb';if(n>=2.5)return'#d97706';return'#dc2626';};
+const bc=v=>{const n=parseFloat(v);if(n>=4.5)return'#16a34a';if(n>=3.5)return'#3b82f6';if(n>=2.5)return'#f59e0b';return'#ef4444';};
+const rbg=r=>({Excellent:'#f0fdf4',Good:'#eff6ff',Fair:'#fffbeb',Poor:'#fef2f2'}[r]||'#f8fafc');
+const rc=r=>({Excellent:'#16a34a',Good:'#2563eb',Fair:'#d97706',Poor:'#dc2626'}[r]||'#64748b');
+
+let allRows=[];let activeFilter={type:null,value:null};let avgScore=0;
+
+function filterBy(type,value){
+  if(activeFilter.type===type&&activeFilter.value===value){clearFilter();return;}
+  activeFilter={type,value};applyFilter();
+}
+function filterByStore(name){
+  if(activeFilter.type==='store'&&activeFilter.value===name){clearFilter();return;}
+  activeFilter={type:'store',value:name};applyFilter();
+}
+function clearFilter(){activeFilter={type:null,value:null};applyFilter();}
+
+function getFiltered(){
+  if(!activeFilter.type||activeFilter.type==='all')return allRows;
+  if(activeFilter.type==='high')return allRows.filter(r=>(r.priority||'').startsWith('High'));
+  if(activeFilter.type==='excellent')return allRows.filter(r=>(r.overallRating||r['Rating']||'')==='Excellent');
+  if(activeFilter.type==='avg')return allRows.filter(r=>parseFloat(r.totalWeightedScore||r['TOTAL SCORE']||0)>=avgScore);
+  if(activeFilter.type==='rating')return allRows.filter(r=>(r.overallRating||r['Rating']||'')===activeFilter.value);
+  if(activeFilter.type==='store')return allRows.filter(r=>(r.storeName||r['Store Name']||'')===activeFilter.value);
+  return allRows;
+}
+
+function applyFilter(){
+  const filtered=getFiltered();
+  const isF=activeFilter.type&&activeFilter.type!=='all';
+  const fb=document.getElementById('filterBar');
+  if(isF){fb.classList.add('show');document.getElementById('filterTag').textContent=activeFilter.value||({high:'High Priority',excellent:'Excellent',avg:'Above Average'}[activeFilter.type])||'—';}
+  else fb.classList.remove('show');
+  const kpiMap={all:'kpi-total',avg:'kpi-avg',high:'kpi-high',excellent:'kpi-exc'};
+  ['kpi-total','kpi-avg','kpi-high','kpi-exc'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    el.classList.remove('active','dimmed');
+    if(!isF)return;
+    const k=Object.keys(kpiMap).find(k=>kpiMap[k]===id);
+    if(activeFilter.type===k)el.classList.add('active');else el.classList.add('dimmed');
+  });
+  const rbMap={Excellent:'rb-exc',Good:'rb-good',Fair:'rb-fair',Poor:'rb-poor'};
+  Object.keys(rbMap).forEach(r=>{
+    const el=document.getElementById(rbMap[r]);if(!el)return;
+    el.classList.remove('active','dimmed');
+    if(!isF||activeFilter.type!=='rating')return;
+    if(activeFilter.value===r)el.classList.add('active');else el.classList.add('dimmed');
+  });
+  document.querySelectorAll('.bar-item[data-store]').forEach(el=>{
+    el.classList.remove('active','dimmed');
+    if(!isF)return;
+    filtered.find(r=>(r.storeName||r['Store Name']||'')===el.dataset.store)?el.classList.add('active'):el.classList.add('dimmed');
+  });
+  document.querySelectorAll('.pipe-card[data-store]').forEach(el=>{
+    el.classList.remove('active','dimmed');
+    if(!isF)return;
+    filtered.find(r=>(r.storeName||r['Store Name']||'')===el.dataset.store)?el.classList.add('active'):el.classList.add('dimmed');
+  });
+  document.querySelectorAll('.tbl tbody tr[data-store]').forEach(el=>{
+    el.classList.remove('row-active','row-dimmed');
+    if(!isF)return;
+    filtered.find(r=>(r.storeName||r['Store Name']||'')===el.dataset.store)?el.classList.add('row-active'):el.classList.add('row-dimmed');
+  });
+  document.getElementById('tableCount').textContent=isF?`${filtered.length} / ${allRows.length} stores`:`${allRows.length} stores`;
+  if(isF)setTimeout(()=>document.querySelector('.table-wrap').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+function renderDashboard(rows){
+  allRows=rows;
+  if(!rows||!rows.length){return;}
+  const scores=rows.map(r=>parseFloat(r.totalWeightedScore||r['TOTAL SCORE']||0)).filter(v=>v>0);
+  avgScore=scores.length?scores.reduce((a,b)=>a+b,0)/scores.length:0;
+  document.getElementById('kpiTotal').textContent=rows.length;
+  document.getElementById('kpiAvg').textContent=avgScore.toFixed(2);
+  document.getElementById('kpiHigh').textContent=rows.filter(r=>(r.priority||r['Priority']||'').startsWith('High')).length;
+  document.getElementById('kpiExc').textContent=rows.filter(r=>(r.overallRating||r['Rating']||'')==='Excellent').length;
+  ['Excellent','Good','Fair','Poor'].forEach(r=>{const el=document.getElementById({Excellent:'r-exc',Good:'r-good',Fair:'r-fair',Poor:'r-poor'}[r]);if(el)el.textContent=rows.filter(x=>(x.overallRating||x['Rating']||'')===r).length;});
+  const sorted=[...rows].sort((a,b)=>parseFloat(b.totalWeightedScore||b['TOTAL SCORE']||0)-parseFloat(a.totalWeightedScore||a['TOTAL SCORE']||0));
+  document.getElementById('storeBarChart').innerHTML=sorted.slice(0,10).map(r=>{
+    const s=parseFloat(r.totalWeightedScore||r['TOTAL SCORE']||0);const name=r.storeName||r['Store Name']||'—';
+    return `<div class="bar-item" data-store="${name}" onclick="filterByStore('${name.replace(/'/g,"\\'")}')"><span class="bar-name" title="${name}">${name}</span><div class="bar-track"><div class="bar-fill" style="width:${(s/5*100).toFixed(1)}%;background:${bc(s)}"></div></div><span class="bar-score" style="color:${bc(s)}">${s.toFixed(1)}</span></div>`;
+  }).join('');
+  const pipe=rows.filter(r=>{const p=(r.priority||r['Priority']||'').split(' ')[0];return p==='High'||p==='Medium';});
+  document.getElementById('pipelineGrid').innerHTML=pipe.length?pipe.slice(0,6).map(r=>{
+    const s=parseFloat(r.totalWeightedScore||r['TOTAL SCORE']||0);
+    const p=(r.priority||r['Priority']||'').split(' ')[0];
+    const pbg=p==='High'?'#fef2f2':'#fffbeb';const pc=p==='High'?'#dc2626':'#d97706';
+    const rat=r.overallRating||r['Rating']||'';const name=r.storeName||r['Store Name']||'—';
+    return `<div class="pipe-card" data-store="${name}" onclick="filterByStore('${name.replace(/'/g,"\\'")}')"><div class="pipe-store">${name}</div><div class="pipe-chain">${r.chain||r['Chain']||''} · ${r.industry||r['Industry']||''}</div><div class="pipe-score" style="color:${sc(s)}">${s.toFixed(1)}</div><div class="pipe-rating" style="color:${sc(s)}">${rat}</div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span style="font-size:10px;color:var(--muted)">${r.surveyDate||r['Date']||''}</span><span class="priority-badge" style="background:${pbg};color:${pc}">${p}</span></div><div class="pipe-solution">${r.solution||r['RBS Solution']||'TBD'}</div></div>`;
+  }).join(''):'<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🎯</div><h3>No priority stores</h3></div>';
+  document.getElementById('tableBody').innerHTML=sorted.map(r=>{
+    const s=parseFloat(r.totalWeightedScore||r['TOTAL SCORE']||0);const rat=r.overallRating||r['Rating']||'';
+    const p=(r.priority||r['Priority']||'').split(' ')[0];
+    const pcls=p==='High'?'background:#fef2f2;color:#dc2626':p==='Medium'?'background:#fffbeb;color:#d97706':'background:#f0fdf4;color:#16a34a';
+    const s1=parseFloat(r.sec1_avg||r['Category (25%)']||0);const s2=parseFloat(r.sec2_avg||r['Shelf (15%)']||0);
+    const s3=parseFloat(r.sec3_avg||r['Display+Visual (30%)']||0);const s4=parseFloat(r.sec4_avg||r['Entrance+Flow (23%)']||0);
+    const name=r.storeName||r['Store Name']||'—';
+    return `<tr data-store="${name}" onclick="filterByStore('${name.replace(/'/g,"\\'")}')"><td style="font-weight:600;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</td><td><span class="chain-tag">${r.chain||r['Chain']||'—'}</span></td><td style="color:var(--muted)">${r.industry||r['Industry']||'—'}</td><td style="color:var(--muted);font-family:var(--mono);font-size:11px">${r.surveyDate||r['Date']||'—'}</td><td style="font-family:var(--mono);font-weight:600;color:${sc(s1)}">${s1?s1.toFixed(1):'—'}</td><td style="font-family:var(--mono);font-weight:600;color:${sc(s2)}">${s2?s2.toFixed(1):'—'}</td><td style="font-family:var(--mono);font-weight:600;color:${sc(s3)}">${s3?s3.toFixed(1):'—'}</td><td style="font-family:var(--mono);font-weight:600;color:${sc(s4)}">${s4?s4.toFixed(1):'—'}</td><td><span class="score-badge" style="background:${rbg(rat)};color:${sc(s)}">${s?s.toFixed(1):'—'}</span></td><td style="font-weight:700;color:${rc(rat)}">${rat||'—'}</td><td>${p?`<span class="priority-badge" style="${pcls}">${p}</span>`:'<span style="color:var(--muted)">—</span>'}</td></tr>`;
+  }).join('');
+  document.getElementById('tableCount').textContent=`${rows.length} stores`;
+  document.getElementById('lastRefresh').textContent=new Date().toLocaleTimeString();
+  clearFilter();
+}
+
+async function loadData(){const url=document.getElementById('gasUrl').value.trim();if(!url){alert('Please enter GAS URL');return;}try{const res=await fetch(url+'?action=getDashboard');const json=await res.json();if(json.status==='ok'&&json.rows)renderDashboard(json.rows);else alert('No data. Try Demo Mode.');}catch(e){alert('Cannot load.\n\n'+e.message);}}
+
+function loadDemoData(){renderDashboard([
+  {storeName:'Circle K Hanoi — Ba Dinh',chain:'Circle K',industry:'CVS',surveyDate:'2025-04-20',sec1_avg:'4.2',sec2_avg:'3.8',sec3_avg:'4.5',sec4_avg:'4.0',totalWeightedScore:'4.18',overallRating:'Good',priority:'High — Close within 1 month',solution:'Smart Gondola + Planogram System'},
+  {storeName:'Winmart Ho Chi Minh City',chain:'Winmart',industry:'Supermarket',surveyDate:'2025-04-21',sec1_avg:'3.5',sec2_avg:'2.8',sec3_avg:'3.2',sec4_avg:'3.8',totalWeightedScore:'3.33',overallRating:'Fair',priority:'High — Close within 1 month',solution:'Shelf Replacement + Category Reset'},
+  {storeName:'Bach Hoa Xanh — District 7',chain:'Bach Hoa Xanh',industry:'Supermarket',surveyDate:'2025-04-21',sec1_avg:'4.8',sec2_avg:'4.5',sec3_avg:'4.9',sec4_avg:'4.7',totalWeightedScore:'4.74',overallRating:'Excellent',priority:'Medium — Follow up in 3 months',solution:'End-cap Display Upgrade'},
+  {storeName:'Guardian — Vincom Center',chain:'Guardian',industry:'Pharmacy',surveyDate:'2025-04-22',sec1_avg:'4.0',sec2_avg:'4.2',sec3_avg:'4.3',sec4_avg:'3.9',totalWeightedScore:'4.13',overallRating:'Good',priority:'Medium — Follow up in 3 months',solution:'Visual Merch + Planogram'},
+  {storeName:'Pharmacity — Nguyen Hue',chain:'Pharmacity',industry:'Pharmacy',surveyDate:'2025-04-22',sec1_avg:'2.5',sec2_avg:'2.0',sec3_avg:'2.8',sec4_avg:'2.3',totalWeightedScore:'2.45',overallRating:'Poor',priority:'High — Close within 1 month',solution:'Full Store Fixture Overhaul'},
+  {storeName:'7-Eleven Hanoi Airport',chain:'7-Eleven',industry:'CVS',surveyDate:'2025-04-23',sec1_avg:'4.5',sec2_avg:'4.0',sec3_avg:'4.6',sec4_avg:'4.4',totalWeightedScore:'4.42',overallRating:'Good',priority:'Low — Keep warm',solution:'Special Display System'},
+  {storeName:'Co.opmart Da Nang',chain:'Co.opmart',industry:'Supermarket',surveyDate:'2025-04-23',sec1_avg:'3.8',sec2_avg:'3.5',sec3_avg:'3.6',sec4_avg:'4.0',totalWeightedScore:'3.73',overallRating:'Good',priority:'Medium — Follow up in 3 months',solution:'Gondola + Planogram Refresh'},
+  {storeName:'Hasaki Beauty Saigon',chain:'Hasaki',industry:'Beauty',surveyDate:'2025-04-24',sec1_avg:'4.9',sec2_avg:'4.7',sec3_avg:'4.8',sec4_avg:'4.6',totalWeightedScore:'4.79',overallRating:'Excellent',priority:'Low — Keep warm',solution:'Premium Display Fixtures'},
+]);}
+loadDemoData();
+</script>
+</body>
+</html>
